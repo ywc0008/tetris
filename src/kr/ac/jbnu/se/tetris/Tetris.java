@@ -40,7 +40,7 @@ public class Tetris extends JFrame {
         add(lobbyPanel, BorderLayout.CENTER);
         
         //bgm
-        backgroundMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/piano.wav",true);
+        backgroundMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/lobby.wav",true);
         backgroundMusic.bgmStart();
         
         setSize(200, 400);// 테트리스 창의 크기 설정
