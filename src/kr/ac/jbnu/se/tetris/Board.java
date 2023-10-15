@@ -33,6 +33,11 @@ public class Board extends JPanel implements ActionListener {
 	JLabel statusbar; //게임 상태를 표시하는 레이블
 	Shape curPiece; //현재 Tetris블록을 나타내는 객체
 	Tetrominoes[] board; 
+	
+	
+	Shape nextPiece; //다음 블럭을 나타냄
+	
+	
 
 	public Board(Tetris parent) { //Tetris에게 상속받음
 
@@ -47,6 +52,7 @@ public class Board extends JPanel implements ActionListener {
 		clearBoard(); //보드 초기화
 	}
 
+	
 	public void actionPerformed(ActionEvent e) {
 		if (isFallingFinished) { //떨어지는게 끝났으면
 			isFallingFinished = false; //false로 바꾸고
@@ -222,7 +228,7 @@ public class Board extends JPanel implements ActionListener {
 		//해당하는 색상을 선택
 		g.setColor(color);
 		g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
-		//사각형을 그림 , x,y는 왼쪽 상산 모서리의 좌표를 나타냄
+		//사각형을 그림 , x,y는 왼쪽 상단 모서리의 좌표를 나타냄
 		g.setColor(color.brighter()); //가장자리 강조
 		g.drawLine(x, y + squareHeight() - 1, x, y);
 		g.drawLine(x, y, x + squareWidth() - 1, y);
