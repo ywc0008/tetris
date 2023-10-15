@@ -3,16 +3,19 @@ package kr.ac.jbnu.se.tetris;
 import java.awt.Color; 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-
+import javax.swing.*;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+
+import javax.swing.border.EmptyBorder;
 
 import java.io.*;
 
@@ -253,7 +256,40 @@ public class Board extends JPanel implements ActionListener {
 	            e.printStackTrace();
 	        }
 	    }
-	 
+	 private void showPauseMenu() {
+	        JFrame frame = new JFrame("Pause Menu");
+	        frame.setSize(200, 150);
+	        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+	        frame.setLocationRelativeTo(this);
+	        frame.setResizable(false);
+
+	        JPanel pausePanel = new JPanel(new GridLayout(2, 1));
+	        pausePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+	        frame.add(pausePanel);
+
+	        JButton resumeButton = new JButton("계속하기");
+	        JButton quitButton = new JButton("끝내기");
+
+	        pausePanel.add(resumeButton);
+	        pausePanel.add(quitButton);
+
+	        resumeButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                frame.dispose(); // 팝업 창 닫기
+	                pause(); // 게임 일시정지 해제
+	            }
+	        });
+
+	        quitButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                System.exit(0); // 게임 종료
+	            }
+	        });
+
+
+
+	        frame.setVisible(true);
+	    }
 	 
 	 
 	
@@ -277,6 +313,13 @@ public class Board extends JPanel implements ActionListener {
 				start();
 				return;
 			}
+			//메뉴
+            if (keycode == KeyEvent.VK_ESCAPE) {
+                pause();
+                showPauseMenu(); // ESC 키를 누르면 일시정지 메뉴 표시
+                return;
+            }
+			
 
 			switch (keycode) {
 			case KeyEvent.VK_LEFT:
