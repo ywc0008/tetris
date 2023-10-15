@@ -1,5 +1,7 @@
 package kr.ac.jbnu.se.tetris;
 
+import java.io.Serializable;
+
 import java.awt.Color; 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -20,9 +22,10 @@ import javax.swing.border.EmptyBorder;
 import java.io.*;
 
 
-public class Board extends JPanel implements ActionListener {
+public class Board extends JPanel implements ActionListener,Serializable {
 	
-
+	private static final long serialVersionUID = 1L;
+	
 	final int BoardWidth = 10; //게임 창 크기 가로 10
 	final int BoardHeight = 22; //세로 22
 
@@ -36,6 +39,8 @@ public class Board extends JPanel implements ActionListener {
 	JLabel statusbar; //게임 상태를 표시하는 레이블
 	Shape curPiece; //현재 Tetris블록을 나타내는 객체
 	Tetrominoes[] board; 
+	
+	
 	
 	
 	Shape nextPiece; //다음 블럭을 나타냄
@@ -162,6 +167,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void newPiece() { //새로운 Tetromino블록을 생성하고 아래로 이동시킴
+		Audio endMusic;
 		curPiece.setRandomShape(); //무작위 블록 할당
 		curX = BoardWidth / 2 + 1; //변수를 게임 보드 중앙에서 시작하도록 설정
 		curY = BoardHeight - 1 + curPiece.minY();//보드 상단에서 아래로 이동하도록 설정
@@ -171,6 +177,9 @@ public class Board extends JPanel implements ActionListener {
 			timer.stop();
 			isStarted = false;
 			statusbar.setText("game over");
+			endMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav",true);
+	        endMusic.bgmStart();
+
 		}
 	}
 
@@ -192,6 +201,7 @@ public class Board extends JPanel implements ActionListener {
 	}
 
 	private void removeFullLines() { //꽉 찬 줄 찾아 제거, 제거된 줄 업데이트
+		Audio breakMusic;
 		int numFullLines = 0; //꽉 찬 줄의 수를 저장 할 변수
 
 		for (int i = BoardHeight - 1; i >= 0; --i) { //아래쪽부터 각 줄을 검사
@@ -210,6 +220,8 @@ public class Board extends JPanel implements ActionListener {
 					for (int j = 0; j < BoardWidth; ++j)
 						board[(k * BoardWidth) + j] = shapeAt(j, k + 1); //각 줄을 한칸씩 아래로 이동
 				}
+		    	breakMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/break.wav",true);
+		        breakMusic.bgmStart();
 			}
 		}
 
@@ -242,20 +254,21 @@ public class Board extends JPanel implements ActionListener {
 	}
 	
 	 public void saveGame(String filename) {
-	        try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-	            // 게임 상태 데이터를 파일에 쓰기
-	            outputStream.writeObject(board);
-	            outputStream.writeObject(numLinesRemoved);
-	            outputStream.writeObject(curX);
-	            outputStream.writeObject(curY);
-	            outputStream.writeObject(curPiece);
-	            outputStream.writeObject(isStarted);
-	            outputStream.writeObject(isFallingFinished);
-	            outputStream.writeObject(isPaused);
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
+		    try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+		        outputStream.writeObject(this); // Board 클래스 자체를 직렬화하여 저장
+		    } catch (IOException e) {
+		        e.printStackTrace();
+		    }
 	    }
+	 public static Board loadGame(String filename) {
+		    try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+		        return (Board) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
+		    } catch (IOException | ClassNotFoundException e) {
+		        e.printStackTrace();
+		        return null;
+		    }
+		}
+	 //esc 메뉴
 	 private void showPauseMenu() {
 	        JFrame frame = new JFrame("Pause Menu");
 	        frame.setSize(200, 150);
@@ -268,15 +281,25 @@ public class Board extends JPanel implements ActionListener {
 	        frame.add(pausePanel);
 
 	        JButton resumeButton = new JButton("계속하기");
+	        JButton saveButton = new JButton("저장하기");
 	        JButton quitButton = new JButton("끝내기");
 
+
 	        pausePanel.add(resumeButton);
+	        pausePanel.add(saveButton);
 	        pausePanel.add(quitButton);
 
 	        resumeButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                frame.dispose(); // 팝업 창 닫기
 	                pause(); // 게임 일시정지 해제
+	            }
+	        });
+	        
+	        saveButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	            	saveGame("C:\\Users\\USER\\eclipse-workspace\\tetris\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\load1.txt");
+	            	System.exit(0); // 게임 종료
 	            }
 	        });
 
@@ -296,9 +319,6 @@ public class Board extends JPanel implements ActionListener {
 	class TAdapter extends KeyAdapter {
 		public void keyPressed(KeyEvent e) {
 
-			if (!isStarted || curPiece.getShape() == Tetrominoes.NoShape) {
-				return; //블록이 없으면 키 입력 무시
-			}
 
 			int keycode = e.getKeyCode();
 

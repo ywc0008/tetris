@@ -1,9 +1,14 @@
 package kr.ac.jbnu.se.tetris;
+import java.io.Serializable;
 
 import java.util.Random;
 
-public class Shape {
-
+public class Shape implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Tetrominoes pieceShape; //변수 선언
 	private int coords[][]; //블럭의 좌표를 지정
 	private int[][][] coordsTable; //모든 블록의 가능한 회전 상태를 저장하는 3차원 배열
