@@ -21,7 +21,6 @@ import javax.swing.border.EmptyBorder;
 
 import java.io.*;
 
-
 public class Board extends JPanel implements ActionListener,Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -83,8 +82,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	public void start() { //게임을 초기화하고 새로운 게임을 시작
+		
 		if (isPaused) //게임이 일시정지상태면 작업수행 x
 			return;
+		
 		isStarted = true; 
 		isFallingFinished = false;
 		numLinesRemoved = 0; 
@@ -93,6 +94,19 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		newPiece();
 		timer.start();
 	}
+	public void restart() { //게임을 초기화하고 새로운 게임을 시작
+		
+		isPaused=true;
+		
+		isStarted = true; 
+		isFallingFinished = false;
+		numLinesRemoved = 0; 
+		clearBoard(); //게임 보드 초기화
+
+		newPiece();
+		timer.start();
+	}
+	
 
 	private void pause() {
 		if (!isStarted)  //게임이 시작되지 않으면 일시정지 불가능
@@ -179,8 +193,89 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			statusbar.setText("game over");
 			endMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav",true);
 	        endMusic.bgmStart();
-
+	        saveScore(numLinesRemoved);
 		}
+	}
+	String enteredName;
+	boolean updated=false;
+	public void saveScore(int numLinesRemoved)
+	{
+		
+		try
+		{
+			String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+			File file=new File(scoreRecord);
+			BufferedReader reader=new BufferedReader(new FileReader(file));
+			String[] names=new String[3];
+			int[] scores =new int[3];
+			
+			for(int i=0;i<3;i++)
+			{
+				String line=reader.readLine();
+				String[] parts=line.split(" : ");
+				names[i]=parts[0];
+				scores[i]=Integer.parseInt(parts[1]);
+			}
+			reader.close();
+			
+			
+			
+			for(int i=0;i<3;i++)
+			{
+				if(numLinesRemoved>=scores[i])
+				{
+					JFrame frame=new JFrame("이름 입력");
+					JPanel panel=new JPanel();
+					JLabel nameLabel=new JLabel("이름: ");
+					JTextField nameField=new JTextField(20);
+					
+					JButton submitButton=new JButton("입력 완료");
+					panel.add(nameLabel);
+					panel.add(nameField);
+					frame.add(panel);
+					panel.add(submitButton);
+
+			
+					frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+					frame.setSize(300,300);
+					frame.setVisible(true);
+
+			        submitButton.addActionListener(new ActionListener() {
+			            public void actionPerformed(ActionEvent e) {
+			                // 텍스트 필드의 내용을 String 객체에 저장
+			            	
+			                enteredName = nameField.getText();
+			                System.out.println(enteredName);
+			                updated=true;
+			            }
+			        });
+			        
+					scores[i]=numLinesRemoved;
+					names[i]=enteredName;
+			        
+					break;
+
+				}
+			}
+			if(updated)
+			{
+				BufferedWriter writer=new BufferedWriter(new FileWriter(file,false));
+				for(int i=0;i<3;i++)
+				{
+					writer.write(names[i]+" : "+scores[i]);
+					System.out.println(names[i]+" : "+scores[i]);
+					writer.newLine();
+				}
+				writer.close();
+				updated=false;
+			}
+			
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 	private boolean tryMove(Shape newPiece, int newX, int newY) {//이동이 유효한지 판단
@@ -255,19 +350,19 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	
 	 public void saveGame(String filename) {
 		    try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-		        outputStream.writeObject(this); // Board 클래스 자체를 직렬화하여 저장
+		        outputStream.writeObject(this.board); // Board 클래스 자체를 직렬화하여 저장
 		    } catch (IOException e) {
 		        e.printStackTrace();
 		    }
 	    }
-	 public static Board loadGame(String filename) {
-		    try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-		        return (Board) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
-		    } catch (IOException | ClassNotFoundException e) {
-		        e.printStackTrace();
-		        return null;
-		    }
-		}
+	    public void loadGame(String filename) {
+	          try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+	            this.board = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
+	            repaint();
+	          } catch (IOException | ClassNotFoundException e) {
+	              e.printStackTrace();
+	          }
+	   }
 	 //esc 메뉴
 	 private void showPauseMenu() {
 	        JFrame frame = new JFrame("Pause Menu");
@@ -298,7 +393,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        
 	        saveButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-	            	saveGame("C:\\Users\\USER\\eclipse-workspace\\tetris\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\load1.ser");
+	            	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
+	            	saveGame(savepath);
 	            	System.exit(0); // 게임 종료
 	            }
 	        });

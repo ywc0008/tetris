@@ -51,7 +51,8 @@ public class Tetris extends JFrame implements Serializable {
         add(lobbyPanel, BorderLayout.CENTER);
         
         //bgm
-        backgroundMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/lobby.wav",true);
+        String lobbywavpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
+        backgroundMusic=new Audio(lobbywavpath,true);
         backgroundMusic.bgmStart();
         
         setSize(200, 400);// 테트리스 창의 크기 설정
@@ -65,7 +66,8 @@ public class Tetris extends JFrame implements Serializable {
     
     private void startGame() {
     	backgroundMusic.bgmStop();
-    	backgroundMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/piano.wav",true);
+    	String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
+    	backgroundMusic=new Audio(pianowavpath,true);
         backgroundMusic.bgmStart();
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
@@ -79,18 +81,21 @@ public class Tetris extends JFrame implements Serializable {
     }
 
     private void loadGameStart() {
-    	backgroundMusic.bgmStop();
-    	backgroundMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/piano.wav",true);
+        backgroundMusic.bgmStop();
+    	String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
+    	backgroundMusic=new Audio(pianowavpath,true);
         backgroundMusic.bgmStart();
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
         add(statusbar, BorderLayout.SOUTH); // 남쪽에 추가
-        Board board = Board.loadGame("C:\\Users\\USER\\eclipse-workspace\\tetris\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\load1.ser");
+        Board board = new Board(this);
         add(board);
         board.start();
         revalidate(); // 화면 다시 그리기
         repaint();
         board.requestFocus(); // 게임 화면에 포커스 설정 중요 이거 없으면 없어진 로비창에서 계속 입력만됨 처리x
+    	String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
+        board.loadGame(savepath);
     }
 
 
