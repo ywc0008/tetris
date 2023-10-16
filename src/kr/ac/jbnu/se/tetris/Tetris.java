@@ -45,9 +45,9 @@ public class Tetris extends JFrame implements Serializable {
             }
         });
         
-        lobbyPanel.add(startButton);
+        lobbyPanel.add(startButton,BorderLayout.NORTH);
         lobbyPanel.add(settingButton,BorderLayout.CENTER);
-        lobbyPanel.add(loadButton,BorderLayout.CENTER);
+        lobbyPanel.add(loadButton,BorderLayout.SOUTH);
         add(lobbyPanel, BorderLayout.CENTER);
         
         //bgm
@@ -85,7 +85,7 @@ public class Tetris extends JFrame implements Serializable {
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
         add(statusbar, BorderLayout.SOUTH); // 남쪽에 추가
-        Board board = Board.loadGame("C:\\Users\\USER\\eclipse-workspace\\tetris\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\load1.txt");
+        Board board = Board.loadGame("C:\\Users\\USER\\eclipse-workspace\\tetris\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\load1.ser");
         add(board);
         board.start();
         revalidate(); // 화면 다시 그리기

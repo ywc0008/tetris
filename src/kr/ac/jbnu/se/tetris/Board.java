@@ -298,7 +298,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        
 	        saveButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-	            	saveGame("C:\\Users\\USER\\eclipse-workspace\\tetris\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\load1.txt");
+	            	saveGame("C:\\Users\\USER\\eclipse-workspace\\tetris\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\load1.ser");
 	            	System.exit(0); // 게임 종료
 	            }
 	        });
