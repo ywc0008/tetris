@@ -197,8 +197,42 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		}
 	}
 	String enteredName;
-	boolean updated=false;
+	
 	public void saveScore(int numLinesRemoved)
+	{
+			JFrame frame=new JFrame("이름 입력");
+			JPanel panel=new JPanel();
+			JLabel nameLabel=new JLabel("이름: ");
+			JTextField nameField=new JTextField(20);
+					
+			JButton submitButton=new JButton("입력 완료");
+			panel.add(nameLabel);
+			panel.add(nameField);
+			frame.add(panel);
+			panel.add(submitButton);
+
+			
+			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			frame.setSize(300,300);
+			frame.setVisible(true);
+
+			 submitButton.addActionListener(new ActionListener() {
+				 public void actionPerformed(ActionEvent e) {
+			                // 텍스트 필드의 내용을 String 객체에 저장
+			            	
+					 enteredName = nameField.getText();
+					 saveScore2(enteredName);
+			         System.out.println(enteredName);
+			         
+			        }
+			 });
+		
+		
+		
+	}
+	
+	
+	public void saveScore2(String enteredName)
 	{
 		
 		try
@@ -219,40 +253,14 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			reader.close();
 			
 			
-			
+			boolean updated=false;
 			for(int i=0;i<3;i++)
 			{
 				if(numLinesRemoved>=scores[i])
 				{
-					JFrame frame=new JFrame("이름 입력");
-					JPanel panel=new JPanel();
-					JLabel nameLabel=new JLabel("이름: ");
-					JTextField nameField=new JTextField(20);
-					
-					JButton submitButton=new JButton("입력 완료");
-					panel.add(nameLabel);
-					panel.add(nameField);
-					frame.add(panel);
-					panel.add(submitButton);
-
-			
-					frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-					frame.setSize(300,300);
-					frame.setVisible(true);
-
-			        submitButton.addActionListener(new ActionListener() {
-			            public void actionPerformed(ActionEvent e) {
-			                // 텍스트 필드의 내용을 String 객체에 저장
-			            	
-			                enteredName = nameField.getText();
-			                System.out.println(enteredName);
-			                updated=true;
-			            }
-			        });
-			        
 					scores[i]=numLinesRemoved;
 					names[i]=enteredName;
-			        
+			        updated=true;
 					break;
 
 				}
@@ -267,7 +275,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					writer.newLine();
 				}
 				writer.close();
-				updated=false;
 			}
 			
 		}
