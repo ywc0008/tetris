@@ -25,18 +25,23 @@ import javax.swing.JTextField;
 public class Tetris extends JFrame implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private JLabel statusbar; // 텍스트 정보를 표시
-    private JPanel lobbyPanel; // 로비 패널
-    private JButton startButton; // 게임 시작 버튼
-    private JButton settingButton;
-    private JButton loadButton;
-    private JButton rankButton;
+	JLabel statusbar; // 텍스트 정보를 표시
+    JPanel lobbyPanel; // 로비 패널
+    JButton startButton; // 게임 시작 버튼
+    JButton settingButton;
+    JButton loadButton;
+    JButton rankButton;
     //bgm
     private Audio backgroundMusic;
 
+    String lobbywavpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
+    String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+    String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
+    String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
+    
     public Tetris() {
+    	lobbyPanel = new JPanel();
         lobbyPanel = new JPanel();
-        
         startButton = new JButton("게임 시작");
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -68,7 +73,7 @@ public class Tetris extends JFrame implements Serializable {
         add(lobbyPanel, BorderLayout.CENTER);
         
         //bgm
-        String lobbywavpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
+        
         backgroundMusic=new Audio(lobbywavpath,true);
         backgroundMusic.bgmStart();
         
@@ -76,6 +81,18 @@ public class Tetris extends JFrame implements Serializable {
         setTitle("Tetris"); // 창의 제목을 Tetris로 설정
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 창을 닫으면 프로그램 종료
     }
+    
+    public void showLobby() {
+        backgroundMusic.bgmStop(); // 현재 재생 중인 BGM 중지
+        backgroundMusic = new Audio(lobbywavpath, true); // 로비 BGM 재생
+        backgroundMusic.bgmStart();
+        getContentPane().removeAll(); // 현재 모든 구성 요소를 제거
+        getContentPane().add(lobbyPanel); // 로비 패널 추가
+        remove(statusbar); // 점수 표시 제거
+        revalidate(); // 화면 다시 그리기
+        repaint();
+    }
+
 
     public JLabel getStatusBar() { // status를 반환하는 매서드
         return statusbar;
@@ -86,7 +103,7 @@ public class Tetris extends JFrame implements Serializable {
 		try
 		{
 			
-			String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+			
 			File file=new File(scoreRecord);
 			BufferedReader reader=new BufferedReader(new FileReader(file));
 			for(int i=0;i<3;i++)
@@ -119,7 +136,6 @@ public class Tetris extends JFrame implements Serializable {
     
     private void startGame() {
     	backgroundMusic.bgmStop();
-    	String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
     	backgroundMusic=new Audio(pianowavpath,true);
         backgroundMusic.bgmStart();
         remove(lobbyPanel); // 로비 패널을 제거
@@ -137,7 +153,6 @@ public class Tetris extends JFrame implements Serializable {
 	
     private void loadGameStart() {
         backgroundMusic.bgmStop();
-    	String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
     	backgroundMusic=new Audio(pianowavpath,true);
         backgroundMusic.bgmStart();
         remove(lobbyPanel); // 로비 패널을 제거
@@ -149,7 +164,6 @@ public class Tetris extends JFrame implements Serializable {
         revalidate(); // 화면 다시 그리기
         repaint();
         board.requestFocus(); // 게임 화면에 포커스 설정 중요 이거 없으면 없어진 로비창에서 계속 입력만됨 처리x
-    	String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
         board.loadGame(savepath);
     }
 

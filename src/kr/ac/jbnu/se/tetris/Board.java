@@ -1,5 +1,6 @@
 package kr.ac.jbnu.se.tetris;
 
+import java.awt.CardLayout;
 import java.awt.Color; 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -22,7 +23,6 @@ import java.io.*;
 public class Board extends JPanel implements ActionListener,Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
 	final int BoardWidth = 10; //게임 창 크기 가로 10
 	final int BoardHeight = 22; //세로 22
 
@@ -37,16 +37,20 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	Shape curPiece; //현재 Tetris블록을 나타내는 객체
 	Tetrominoes[] board; 
 	String savestatusbarpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\savestatusbar.txt";
-	
+	String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
+	String breakmusicpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\break.wav";
 	
 	
 	
 	Shape nextPiece; //다음 블럭을 나타냄
 	
 	
-
+	private Tetris tetris;
 	public Board(Tetris parent) { //Tetris에게 상속받음
-
+		
+		tetris=parent;
+	    
 		setFocusable(true); //키보드 이벤트 처리 가능
 		curPiece = new Shape(); //현재 테트리스 블록을 나타내는 curPiece변수에 할당
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
@@ -55,6 +59,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
 		clearBoard(); //보드 초기화
+
 	}
 
 	
@@ -255,7 +260,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		
 		try
 		{
-			String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+			
 			File file=new File(scoreRecord);
 			BufferedReader reader=new BufferedReader(new FileReader(file));
 			String[] names=new String[3];
@@ -342,7 +347,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					for (int j = 0; j < BoardWidth; ++j)
 						board[(k * BoardWidth) + j] = shapeAt(j, k + 1); //각 줄을 한칸씩 아래로 이동
 				}
-		    	breakMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/break.wav",true);
+		    	breakMusic=new Audio(breakmusicpath,true);
 		        breakMusic.bgmStart();
 			}
 		}
@@ -393,7 +398,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	       }
 	       
 	 }
-
 	 //esc 메뉴
 	 private void showPauseMenu() {
 	        JFrame frame = new JFrame("Pause Menu");
@@ -407,7 +411,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        frame.add(pausePanel);
 
 	        JButton resumeButton = new JButton("계속하기");
-	        JButton saveButton = new JButton("저장하기");
+	        JButton saveButton = new JButton("저장 및 종료");
 	        JButton quitButton = new JButton("끝내기");
 	        JButton lobbyButton = new JButton("로비");
 
@@ -425,7 +429,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        
 	        saveButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-	            	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
 	            	saveGame(savepath);
 	            	System.exit(0); // 게임 종료
 	            }
@@ -433,12 +436,13 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 	        quitButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-	                System.exit(0); // 게임 종료
+	            	System.exit(0); // 게임 종료
 	            }
 	        });
 	        lobbyButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
-
+	            	frame.dispose(); // 팝업 창 닫기
+	            	tetris.showLobby();
 	            }
 	        });
 
@@ -446,9 +450,12 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 	        frame.setVisible(true);
 	    }
-	 
-	 
 	
+	 
+
+
+
+
 	class TAdapter extends KeyAdapter {
 		public void keyPressed(KeyEvent e) {
 
