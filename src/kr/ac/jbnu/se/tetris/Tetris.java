@@ -9,6 +9,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 
 import javax.swing.JButton;
@@ -17,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.BorderFactory;
 
 
 
@@ -31,6 +37,7 @@ public class Tetris extends JFrame implements Serializable {
     private JButton settingButton;
     private JButton loadButton;
     private JButton rankButton;
+    private JButton twoPlayerStartButton; //2인용 시작 버튼
     //bgm
     private Audio backgroundMusic;
 
@@ -53,7 +60,19 @@ public class Tetris extends JFrame implements Serializable {
             	loadGameStart();
             }
         });
-        
+
+        twoPlayerStartButton = new JButton("2인용 시작");
+        twoPlayerStartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                startTwoPlayerGame();
+            }
+        });
+
+
+
+
+        lobbyPanel.add(twoPlayerStartButton, BorderLayout.NORTH);
+
         rankButton=new JButton("랭킹");
         rankButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -132,6 +151,43 @@ public class Tetris extends JFrame implements Serializable {
         repaint();
         board.requestFocus(); // 게임 화면에 포커스 설정 중요 이거 없으면 없어진 로비창에서 계속 입력만됨 처리x
     }
+
+    private void startTwoPlayerGame() {
+        backgroundMusic.bgmStop();
+        String pianowavpath = System.getProperty("user.dir") + "\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
+        backgroundMusic = new Audio(pianowavpath, true);
+        backgroundMusic.bgmStart();
+
+        remove(lobbyPanel);
+        statusbar = new JLabel("Player 1: 0 | Player 2: 0");
+        add(statusbar, BorderLayout.SOUTH);
+
+        Board board1 = new Board(this, "WASD");
+        Board board2 = new Board(this, "ARROW");
+        board1.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        board2.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+
+        // Set fixed sizes for the boards - You should adjust these as needed.
+        board1.setPreferredSize(new Dimension(150, 400)); // assuming a width of 150 and height of 400 for example
+        board2.setPreferredSize(new Dimension(150, 400));
+
+        JPanel gamePanel = new JPanel();
+        gamePanel.setLayout(new GridLayout(1, 2)); // Use GridLayout to place boards side by side
+        gamePanel.add(board1);
+        gamePanel.add(board2);
+
+        add(gamePanel);
+
+        board1.start();
+        board2.start();
+
+        revalidate();
+        repaint();
+
+
+
+    }
+
 
     private void loadGameStart() {
         backgroundMusic.bgmStop();

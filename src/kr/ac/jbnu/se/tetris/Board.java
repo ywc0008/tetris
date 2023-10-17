@@ -24,8 +24,8 @@ import java.io.*;
 public class Board extends JPanel implements ActionListener,Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	
-	final int BoardWidth = 10; //게임 창 크기 가로 10
+
+	final int BoardWidth = 10;
 	final int BoardHeight = 22; //세로 22
 
 	Timer timer;
@@ -33,30 +33,41 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	boolean isStarted = false;
 	boolean isPaused = false;
 	int numLinesRemoved = 0;
+	Shape curPiece; //현재 Tetris블록을 나타내는 객체
 	int curX = 0; //현재 블록의 위치를 나타내는 변수
 	int curY = 0; //현재 블록의 위치를 나타내는 변수
+	Shape curPiece1;
+	int curX1;
+	int curY1;
 	JLabel statusbar; //게임 상태를 표시하는 레이블
-	Shape curPiece; //현재 Tetris블록을 나타내는 객체
-	Tetrominoes[] board; 
-	
-	
-	
+	Tetrominoes[] board;
+	private int playerMode=1;
+
+
 	
 	Shape nextPiece; //다음 블럭을 나타냄
-	
-	
 
-	public Board(Tetris parent) { //Tetris에게 상속받음
 
-		setFocusable(true); //키보드 이벤트 처리 가능
-		curPiece = new Shape(); //현재 테트리스 블록을 나타내는 curPiece변수에 할당
-		timer = new Timer(400, this); //테트리스가 떨어지는 시간
-		timer.start(); //타이머 시작
 
-		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
-		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
-		addKeyListener(new TAdapter());//키를 통해 블록제어
-		clearBoard(); //보드 초기화
+	public Board(Tetris parent) {
+		this(parent, "ARROW"); // 기본값으로 화살표 키를 사용
+	}
+
+	public Board(Tetris parent, String keyConfig) {
+		setFocusable(true);
+		curPiece = new Shape();
+		timer = new Timer(400, this);
+		timer.start();
+
+		statusbar = parent.getStatusBar();
+		board = new Tetrominoes[BoardWidth * BoardHeight];
+		if("WASD".equals(keyConfig)) {
+			addKeyListener(new TAdapter());
+			playerMode = 2;
+		} else if("ARROW".equals(keyConfig)) {
+			addKeyListener(new TAdapter());
+		}
+		clearBoard();
 	}
 
 	
@@ -433,58 +444,61 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 	        frame.setVisible(true);
 	    }
-	 
-	 
-	
-	class TAdapter extends KeyAdapter {
-		public void keyPressed(KeyEvent e) {
 
-
-			int keycode = e.getKeyCode();
-
-			if (keycode == 'p' || keycode == 'P') {
-				pause();
-				return;
-			}
-			if (isPaused)
-				return;
-			//재시작기능
-			if (keycode == 'r' || keycode == 'R') {
-				start();
-				return;
-			}
-			//메뉴
-            if (keycode == KeyEvent.VK_ESCAPE) {
-                pause();
-                showPauseMenu(); // ESC 키를 누르면 일시정지 메뉴 표시
-                return;
-            }
-			
-
-			switch (keycode) {
-			case KeyEvent.VK_LEFT:
-				tryMove(curPiece, curX - 1, curY);
-				break;
-			case KeyEvent.VK_RIGHT:
-				tryMove(curPiece, curX + 1, curY);
-				break;
-			case KeyEvent.VK_DOWN:
-				tryMove(curPiece.rotateRight(), curX, curY);
-				break;
-			case KeyEvent.VK_UP:
-				tryMove(curPiece.rotateLeft(), curX, curY);
-				break;
-			case KeyEvent.VK_SPACE:
-				dropDown();
-				break;
-			case 'd':
-				oneLineDown();
-				break;
-			case 'D':
-				oneLineDown();
-				break;
-			}
-
+class TAdapter extends KeyAdapter {
+	public void keyPressed(KeyEvent e) {
+		if (!isStarted || curPiece.getShape() == Tetrominoes.NoShape) {
+			return;
 		}
-	}
+		int keycode = e.getKeyCode();
+
+		if (keycode == 'p' || keycode == 'P') {
+			pause();
+			return;
+		}
+		if (isPaused)
+			return;
+
+		if (keycode == 'r' || keycode == 'R') {
+			start();
+			return;
+		}
+
+		if (keycode == KeyEvent.VK_ESCAPE) {
+			pause();
+			showPauseMenu();
+			return;
+		}
+		// Player 1 (오른쪽) - 방향키
+		if (playerMode == 1) {
+			if (keycode == KeyEvent.VK_UP) {
+				tryMove(curPiece.rotateLeft(), curX, curY);
+			} else if (keycode == KeyEvent.VK_DOWN) {
+				tryMove(curPiece, curX, curY - 1);
+			} else if (keycode == KeyEvent.VK_LEFT) {
+				tryMove(curPiece, curX - 1, curY);
+			} else if (keycode == KeyEvent.VK_RIGHT) {
+				tryMove(curPiece, curX + 1, curY);
+			} else if (keycode == KeyEvent.VK_SPACE) {
+				dropDown();
+			}}
+		// Player 2 (왼쪽) - WASD
+		else if (playerMode == 2) {
+			if (keycode == 'W') {
+				tryMove(curPiece1.rotateLeft(), curX1, curY1);
+			} else if (keycode == 'S') {
+				tryMove(curPiece1, curX1, curY1 - 1);
+			} else if (keycode == 'A') {
+				tryMove(curPiece1, curX1 - 1, curY1);
+			} else if (keycode == 'D') {
+				tryMove(curPiece1, curX1 + 1, curY1);
+			} else if (keycode == 'X') {
+				dropDown();
+			}
+		}
+	}}
+
 }
+
+
+
