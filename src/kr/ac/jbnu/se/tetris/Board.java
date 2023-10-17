@@ -1,7 +1,5 @@
 package kr.ac.jbnu.se.tetris;
 
-import java.io.Serializable;
-
 import java.awt.Color; 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -38,6 +36,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	JLabel statusbar; //게임 상태를 표시하는 레이블
 	Shape curPiece; //현재 Tetris블록을 나타내는 객체
 	Tetrominoes[] board; 
+	String savestatusbarpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\savestatusbar.txt";
 	
 	
 	
@@ -52,7 +51,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		curPiece = new Shape(); //현재 테트리스 블록을 나타내는 curPiece변수에 할당
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
 		timer.start(); //타이머 시작
-
 		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
@@ -196,8 +194,28 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        saveScore(numLinesRemoved);
 		}
 	}
-	String enteredName;
 	
+	public void saveStatusBar(String filename) {
+		try(BufferedWriter writer=new BufferedWriter(new FileWriter(filename))){
+			writer.write(String.valueOf(numLinesRemoved));
+			System.out.print(String.valueOf(numLinesRemoved));
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void loadStatusbar(String filename) {
+	    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+	        String statusBarText = reader.readLine();
+	        numLinesRemoved=Integer.parseInt(statusBarText);
+	        statusbar.setText(statusBarText);
+	    } catch (IOException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	
+	String enteredName;
 	public void saveScore(int numLinesRemoved)
 	{
 			JFrame frame=new JFrame("이름 입력");
@@ -267,6 +285,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			}
 			if(updated)
 			{
+				
+				
 				BufferedWriter writer=new BufferedWriter(new FileWriter(file,false));
 				for(int i=0;i<3;i++)
 				{
@@ -358,18 +378,22 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	 public void saveGame(String filename) {
 		    try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
 		        outputStream.writeObject(this.board); // Board 클래스 자체를 직렬화하여 저장
+		        saveStatusBar(savestatusbarpath);
 		    } catch (IOException e) {
 		        e.printStackTrace();
 		    }
 	    }
-	    public void loadGame(String filename) {
-	          try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-	            this.board = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
-	            repaint();
-	          } catch (IOException | ClassNotFoundException e) {
-	              e.printStackTrace();
-	          }
-	   }
+	 public void loadGame(String filename) {
+	       try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+	    	 loadStatusbar(savestatusbarpath);
+	         this.board = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
+	         repaint();
+	       } catch (IOException | ClassNotFoundException e) {
+	           e.printStackTrace();
+	       }
+	       
+	 }
+
 	 //esc 메뉴
 	 private void showPauseMenu() {
 	        JFrame frame = new JFrame("Pause Menu");
@@ -385,11 +409,12 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        JButton resumeButton = new JButton("계속하기");
 	        JButton saveButton = new JButton("저장하기");
 	        JButton quitButton = new JButton("끝내기");
-
+	        JButton lobbyButton = new JButton("로비");
 
 	        pausePanel.add(resumeButton);
 	        pausePanel.add(saveButton);
 	        pausePanel.add(quitButton);
+	        pausePanel.add(lobbyButton);
 
 	        resumeButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
@@ -409,6 +434,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        quitButton.addActionListener(new ActionListener() {
 	            public void actionPerformed(ActionEvent e) {
 	                System.exit(0); // 게임 종료
+	            }
+	        });
+	        lobbyButton.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+
 	            }
 	        });
 

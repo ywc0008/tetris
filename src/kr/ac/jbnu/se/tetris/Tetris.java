@@ -132,7 +132,9 @@ public class Tetris extends JFrame implements Serializable {
         repaint();
         board.requestFocus(); // 게임 화면에 포커스 설정 중요 이거 없으면 없어진 로비창에서 계속 입력만됨 처리x
     }
+    
 
+	
     private void loadGameStart() {
         backgroundMusic.bgmStop();
     	String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
