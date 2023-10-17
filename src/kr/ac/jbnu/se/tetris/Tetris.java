@@ -1,7 +1,13 @@
 package kr.ac.jbnu.se.tetris;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
 
 
@@ -9,6 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 
 
@@ -22,6 +30,7 @@ public class Tetris extends JFrame implements Serializable {
     private JButton startButton; // 게임 시작 버튼
     private JButton settingButton;
     private JButton loadButton;
+    private JButton rankButton;
     //bgm
     private Audio backgroundMusic;
 
@@ -45,9 +54,17 @@ public class Tetris extends JFrame implements Serializable {
             }
         });
         
+        rankButton=new JButton("랭킹");
+        rankButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	loadRank();
+            }
+        });
+
         lobbyPanel.add(startButton,BorderLayout.NORTH);
         lobbyPanel.add(settingButton,BorderLayout.CENTER);
         lobbyPanel.add(loadButton,BorderLayout.SOUTH);
+        lobbyPanel.add(rankButton,BorderLayout.CENTER);
         add(lobbyPanel, BorderLayout.CENTER);
         
         //bgm
@@ -63,6 +80,42 @@ public class Tetris extends JFrame implements Serializable {
     public JLabel getStatusBar() { // status를 반환하는 매서드
         return statusbar;
     }
+    static String[] record=new String[3];
+    public void loadRank()
+    {
+		try
+		{
+			
+			String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+			File file=new File(scoreRecord);
+			BufferedReader reader=new BufferedReader(new FileReader(file));
+			for(int i=0;i<3;i++)
+			{
+				String line=reader.readLine();
+				record[i]=line;
+			}
+			reader.close();
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+    	JFrame frame=new JFrame("Rank");
+    	JLabel label=new JLabel();
+    	JButton button=new JButton("확인");
+
+    	frame.setSize(300,300);
+    	frame.setLayout(new BorderLayout()); // 레이아웃 관리자 설정
+    	label.setText("<html>"+"RANK"+"<br>"+record[0]+"<br>"+record[1]+"<br>"+record[2]+"</html>");;
+        button.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // 팝업 창 닫기
+            }
+        });		
+    	frame.add(label,BorderLayout.CENTER);
+    	frame.add(button,BorderLayout.SOUTH);
+        frame.setVisible(true);
+    }
+
     
     private void startGame() {
     	backgroundMusic.bgmStop();
