@@ -44,31 +44,9 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	
 	Shape nextPiece; //다음 블럭을 나타냄
 	
-	
-	
-	
-	
-	
-	
 	int nextX=10;
 	int nextY=10;
 	private JLabel nextPieceLabel;
-	private boolean falg=true;
-	
-	
-	
-	
-	
-	/*		nextPiece = new Shape();
-		nextPieceLabel = new JLabel();
-		add(nextPieceLabel);
-	*/
-	
-	
-	
-	
-	
-	
 	
 	private Tetris tetris;
 	public Board(Tetris parent) { //Tetris에게 상속받음
@@ -173,6 +151,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			}
 		}
 	}
+	private Timer softDropDelayTimer;
+	
 
 	private void dropDown() { //빨리 블록을 내리는 것
 		int newY = curY; //현재 와이좌표를 저장
@@ -181,7 +161,18 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				break;
 			--newY; //높이를 내림
 		}
-		pieceDropped();
+		if (softDropDelayTimer != null) {
+			softDropDelayTimer.stop();
+		}
+		softDropDelayTimer = new Timer(500, new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// 0.5초가 지난 후 블록이 자동으로 한 칸 아래로 떨어집니다.
+				oneLineDown();
+				softDropDelayTimer.stop(); // 타이머를 멈추게 함으로써 블록이 한 번만 내려가게 합니다.
+			}
+		});
+		softDropDelayTimer.start();
+
 	}
 
 	private void oneLineDown() { //블럭을 한칸 밑으로 이동
