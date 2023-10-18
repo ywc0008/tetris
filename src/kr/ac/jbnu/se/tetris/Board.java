@@ -60,7 +60,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
 		timer.start(); //타이머 시작
 		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
-		levelbar=parent.getLevelBar();
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
 		clearBoard(); //보드 초기화
@@ -238,7 +237,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        String statusBarText = reader.readLine();
 	        numLinesRemoved=Integer.parseInt(statusBarText);
 	        statusbar.setText(statusBarText);
-	        levelbar.setText("Level"+Integer.toString(numLinesRemoved/3));
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
@@ -440,7 +438,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	 //esc 메뉴
 	 private void showPauseMenu() {
 	        JFrame frame = new JFrame("Pause Menu");
-	        frame.setSize(200, 150);
+	        frame.setSize(400, 200);
 	        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	        frame.setLocationRelativeTo(this);
 	        frame.setResizable(false);

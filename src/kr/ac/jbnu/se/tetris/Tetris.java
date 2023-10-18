@@ -184,7 +184,6 @@ public class Tetris extends JFrame implements Serializable {
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
         add(statusbar, BorderLayout.SOUTH); // 남쪽에 추가
-        add(levelbar, BorderLayout.NORTH); // 남쪽에 추가
         Board board = new Board(this);
         add(board);
         board.start();
