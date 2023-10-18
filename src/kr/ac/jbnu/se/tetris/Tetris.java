@@ -9,8 +9,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-
-
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -168,6 +172,18 @@ public class Tetris extends JFrame implements Serializable {
         // 두 번째 플레이어 게임 보드 생성 및 추가
         TwoPlayerBoard board2 = new TwoPlayerBoard(this);
         add(board2, BorderLayout.EAST);
+
+        board1.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        board2.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        board1.setPreferredSize(new Dimension(150, 400)); // assuming a width of 150 and height of 400 for example
+        board2.setPreferredSize(new Dimension(150, 400));
+
+        JPanel gamePanel = new JPanel();
+        gamePanel.setLayout(new GridLayout(1, 2)); // Use GridLayout to place boards side by side
+        gamePanel.add(board1);
+        gamePanel.add(board2);
+
+        add(gamePanel);
 
         board1.start();
         board2.start();
