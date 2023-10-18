@@ -42,8 +42,32 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	String breakmusicpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\break.wav";
 	
 	
-	
 	Shape nextPiece; //다음 블럭을 나타냄
+	
+	
+	
+	
+	
+	
+	
+	int nextX=10;
+	int nextY=10;
+	private JLabel nextPieceLabel;
+	private boolean falg=true;
+	
+	
+	
+	
+	
+	/*		nextPiece = new Shape();
+		nextPieceLabel = new JLabel();
+		add(nextPieceLabel);
+	*/
+	
+	
+	
+	
+	
 	
 	
 	private Tetris tetris;
@@ -456,55 +480,56 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 
 
-	class TAdapter extends KeyAdapter {
-		public void keyPressed(KeyEvent e) {
+		class TAdapter extends KeyAdapter {
+			public void keyPressed(KeyEvent e) {
 
 
-			int keycode = e.getKeyCode();
+				int keycode = e.getKeyCode();
 
-			if (keycode == 'p' || keycode == 'P') {
-				pause();
-				return;
+				if (keycode == 'p' || keycode == 'P') {
+					pause();
+					return;
+				}
+				if (isPaused)
+					return;
+				//재시작기능
+				if (keycode == 'r' || keycode == 'R') {
+					start();
+					return;
+				}
+				//메뉴
+				if (keycode == KeyEvent.VK_ESCAPE) {
+					pause();
+					showPauseMenu(); // ESC 키를 누르면 일시정지 메뉴 표시
+
+
+					return;
+				}
+
+				if (keycode == TetrisKeySetting.keyMappings.get("MoveLeft")) {
+
+					tryMove(curPiece, curX - 1, curY);
+
+				} else if (keycode == TetrisKeySetting.keyMappings.get("MoveRight")) {
+
+					tryMove(curPiece, curX + 1, curY);
+
+				} else if (keycode == TetrisKeySetting.keyMappings.get("RotateLeft")) {
+
+					tryMove(curPiece.rotateLeft(), curX, curY);
+
+				} else if (keycode == TetrisKeySetting.keyMappings.get("RotateRight")) {
+
+					tryMove(curPiece.rotateRight(), curX, curY);
+
+				} else if (keycode == TetrisKeySetting.keyMappings.get("MoveDown")) {
+
+					oneLineDown();
+
+				} else if (keycode == TetrisKeySetting.keyMappings.get("DropDown")) {
+
+					dropDown();
+				}
 			}
-			if (isPaused)
-				return;
-			//재시작기능
-			if (keycode == 'r' || keycode == 'R') {
-				start();
-				return;
-			}
-			//메뉴
-            if (keycode == KeyEvent.VK_ESCAPE) {
-                pause();
-                showPauseMenu(); // ESC 키를 누르면 일시정지 메뉴 표시
-                return;
-            }
-			
-
-			switch (keycode) {
-			case KeyEvent.VK_LEFT:
-				tryMove(curPiece, curX - 1, curY);
-				break;
-			case KeyEvent.VK_RIGHT:
-				tryMove(curPiece, curX + 1, curY);
-				break;
-			case KeyEvent.VK_DOWN:
-				tryMove(curPiece.rotateRight(), curX, curY);
-				break;
-			case KeyEvent.VK_UP:
-				tryMove(curPiece.rotateLeft(), curX, curY);
-				break;
-			case KeyEvent.VK_SPACE:
-				dropDown();
-				break;
-			case 'd':
-				oneLineDown();
-				break;
-			case 'D':
-				oneLineDown();
-				break;
-			}
-
 		}
 	}
-}

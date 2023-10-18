@@ -2,6 +2,7 @@ package kr.ac.jbnu.se.tetris;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -34,14 +35,14 @@ public class Tetris extends JFrame implements Serializable {
     JButton rankButton;
     //bgm
     private Audio backgroundMusic;
-
+    private TetrisKeySetting keySetting;
     String lobbywavpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
     String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
     String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
     String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
     
     public Tetris() {
-    	lobbyPanel = new JPanel();
+    	lobbyPanel = new JPanel(new GridLayout(4,1));
         
         Dimension buttonSize=new Dimension(200,50);
         startButton = new JButton("게임 시작");
@@ -74,6 +75,13 @@ public class Tetris extends JFrame implements Serializable {
             	loadRank();
             }
         });
+        
+        settingButton = new JButton("환경 설정");
+        settingButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                openSetting();
+            }
+        });
 
         lobbyPanel.add(startButton,BorderLayout.CENTER);
         lobbyPanel.add(settingButton,BorderLayout.CENTER);
@@ -89,6 +97,7 @@ public class Tetris extends JFrame implements Serializable {
         setSize(400, 800);// 테트리스 창의 크기 설정
         setTitle("Tetris"); // 창의 제목을 Tetris로 설정
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 창을 닫으면 프로그램 종료
+        keySetting = new TetrisKeySetting();
     }
     
     public void showLobby() {
@@ -175,7 +184,10 @@ public class Tetris extends JFrame implements Serializable {
         board.requestFocus(); // 게임 화면에 포커스 설정 중요 이거 없으면 없어진 로비창에서 계속 입력만됨 처리x
         board.loadGame(savepath);
     }
-
+    private void openSetting() { //Setting 화면 출력
+//      TetrisKeySetting keySetting = new TetrisKeySetting();
+      keySetting.setVisible(true);
+      }
 
     public static void main(String[] args) {
         Tetris game = new Tetris();
