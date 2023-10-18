@@ -56,6 +56,7 @@ public class Board extends JPanel implements ActionListener,Serializable,KeyList
 		setFocusable(true);
 		this.keyConfig = keyConfig;
 		curPiece = new Shape();
+		curPiece1 = new Shape();
 		timer = new Timer(400, this);
 		timer.start();
 
