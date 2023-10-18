@@ -208,7 +208,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		curY = BoardHeight - 1 + curPiece.minY();//보드 상단에서 아래로 이동하도록 설정
 		level=numLinesRemoved;
 		if (level >= 2) {
-		    timer.setDelay(200); // level이 2이상일 때 빠른 속도로 설정
+		    timer.setDelay(100); // level이 2이상일 때 빠른 속도로 설정
+		}
+		else if(level>=5)
+		{
+			timer.setDelay(50);
 		}
 		if (!tryMove(curPiece, curX, curY)) { //새로 생성된 우 초기 위치가 유효한지 나타냄
 			curPiece.setShape(Tetrominoes.NoShape);
@@ -389,18 +393,27 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		//블록 모양에 해당하는 색상을 배열에 저장
 		Color color = colors[shape.ordinal()];
 		//해당하는 색상을 선택
-		g.setColor(color);
-		g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
-		//사각형을 그림 , x,y는 왼쪽 상단 모서리의 좌표를 나타냄
-		if(level>=2)
+		
+		
+		
+		if(level>=4)
 		{
 			g.setColor(new Color(238,238,238));
 		}
-			
-		g.setColor(color.brighter()); //가장자리 강조
-		g.drawLine(x, y + squareHeight() - 1, x, y);
-		g.drawLine(x, y, x + squareWidth() - 1, y);
+		else
+			g.setColor(color);
 		
+		
+		g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
+		//사각형을 그림 , x,y는 왼쪽 상단 모서리의 좌표를 나타냄
+
+		if(level<=3)
+		{
+			g.setColor(color.brighter()); //가장자리 강조
+			g.drawLine(x, y + squareHeight() - 1, x, y);
+			g.drawLine(x, y, x + squareWidth() - 1, y);
+
+		}
 		g.setColor(color.darker());
 		g.drawLine(x + 1, y + squareHeight() - 1, x + squareWidth() - 1, y + squareHeight() - 1);
 		g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
