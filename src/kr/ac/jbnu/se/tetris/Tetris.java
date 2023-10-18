@@ -17,7 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
+import javax.swing.JSeparator;
 
 
 
@@ -28,6 +28,9 @@ public class Tetris extends JFrame implements Serializable {
 	private JLabel statusbar; // 텍스트 정보를 표시
     private JPanel lobbyPanel; // 로비 패널
     private JButton startButton; // 게임 시작 버튼
+
+    private JButton twoPlayerStartButton; // 2인용 게임 시작 버튼
+
     private JButton settingButton;
     private JButton loadButton;
     private JButton rankButton;
@@ -43,7 +46,15 @@ public class Tetris extends JFrame implements Serializable {
                 startGame(); // 게임 시작 버튼을 클릭하면 게임을 시작합니다.
             }
         });
-        
+
+        twoPlayerStartButton = new JButton("2인용 게임 시작");
+        twoPlayerStartButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                startTwoPlayerGame(); // 2인용 게임 시작 버튼을 클릭하면 2인용 게임을 시작합니다.
+            }
+        });
+
+        lobbyPanel.add(twoPlayerStartButton,BorderLayout.SOUTH);
         
         settingButton=new JButton("환경 설정");
         
@@ -132,6 +143,39 @@ public class Tetris extends JFrame implements Serializable {
         repaint();
         board.requestFocus(); // 게임 화면에 포커스 설정 중요 이거 없으면 없어진 로비창에서 계속 입력만됨 처리x
     }
+
+    private void startTwoPlayerGame() {
+
+        backgroundMusic.bgmStop();
+        String pianowavpath = System.getProperty("user.dir") + "\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
+        backgroundMusic = new Audio(pianowavpath, true);
+        backgroundMusic.bgmStart();
+        remove(lobbyPanel); // 로비 패널을 제거
+
+        JLabel statusbar1 = new JLabel("Player 1: 0");
+        add(statusbar1, BorderLayout.NORTH);
+        JLabel statusbar2 = new JLabel("Player 2: 0");
+        add(statusbar2, BorderLayout.SOUTH);
+
+        // 첫 번째 플레이어 게임 보드 생성 및 추가
+        TwoPlayerBoard board1 = new TwoPlayerBoard(this);
+        add(board1, BorderLayout.WEST);
+
+        // 경계선 추가
+        JSeparator separator = new JSeparator(JSeparator.VERTICAL);
+        add(separator, BorderLayout.CENTER);
+
+        // 두 번째 플레이어 게임 보드 생성 및 추가
+        TwoPlayerBoard board2 = new TwoPlayerBoard(this);
+        add(board2, BorderLayout.EAST);
+
+        board1.start();
+        board2.start();
+
+        revalidate(); // 화면 다시 그리기
+        repaint();
+    }
+
 
     private void loadGameStart() {
         backgroundMusic.bgmStop();

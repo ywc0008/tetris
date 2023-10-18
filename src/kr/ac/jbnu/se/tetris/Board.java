@@ -59,7 +59,9 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		clearBoard(); //보드 초기화
 	}
 
-	
+
+
+
 	public void actionPerformed(ActionEvent e) {
 		if (isFallingFinished) { //떨어지는게 끝났으면
 			isFallingFinished = false; //false로 바꾸고
@@ -77,7 +79,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		return (int) getSize().getHeight() / BoardHeight;
 	}
 
-	Tetrominoes shapeAt(int x, int y) { //주어진 좌표에 있는 블록 모양을 가져옴
+	Tetrominoes shapeAt(int x, int y, Tetrominoes[] board2) { //주어진 좌표에 있는 블록 모양을 가져옴
 		return board[(y * BoardWidth) + x];
 	}
 
@@ -131,7 +133,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 		for (int i = 0; i < BoardHeight; ++i) { //게임 보드를 순회하면서 각 위치에 블록이 있는지 확인
 			for (int j = 0; j < BoardWidth; ++j) {
-				Tetrominoes shape = shapeAt(j, BoardHeight - i - 1);
+				Tetrominoes shape = shapeAt(j, BoardHeight - i - 1, board);
 				if (shape != Tetrominoes.NoShape)
 					drawSquare(g, 0 + j * squareWidth(), boardTop + i * squareHeight(), shape); //있으면 그림
 			}
@@ -308,7 +310,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			int y = newY - newPiece.y(i); 
 			if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
 				return false; // 계산된 좌표가 보드를 벗어난 경우 false
-			if (shapeAt(x, y) != Tetrominoes.NoShape) //이미 블록이 존재하는 경우, 이동을 실패하고 false
+			if (shapeAt(x, y, board) != Tetrominoes.NoShape) //이미 블록이 존재하는 경우, 이동을 실패하고 false
 				return false;
 		}
 
@@ -327,7 +329,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			boolean lineIsFull = true; //현재 검사중인 줄을 꽉 찬 줄로 초기화
 
 			for (int j = 0; j < BoardWidth; ++j) { //모든 열을 검사
-				if (shapeAt(j, i) == Tetrominoes.NoShape) { //현재 열에 블록이 없다면 꽉 차지 않은 것으로 판단
+				if (shapeAt(j, i, board) == Tetrominoes.NoShape) { //현재 열에 블록이 없다면 꽉 차지 않은 것으로 판단
 					lineIsFull = false;
 					break;
 				}
@@ -337,7 +339,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				++numFullLines; //줄 수 증가 
 				for (int k = i; k < BoardHeight - 1; ++k) {
 					for (int j = 0; j < BoardWidth; ++j)
-						board[(k * BoardWidth) + j] = shapeAt(j, k + 1); //각 줄을 한칸씩 아래로 이동
+						board[(k * BoardWidth) + j] = shapeAt(j, k + 1, board); //각 줄을 한칸씩 아래로 이동
 				}
 		    	breakMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/break.wav",true);
 		        breakMusic.bgmStart();
@@ -353,7 +355,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		}
 	}
 
-	private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
+	public void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
 		Color colors[] = { new Color(0, 0, 0), new Color(204, 102, 102), new Color(102, 204, 102),
 				new Color(102, 102, 204), new Color(204, 204, 102), new Color(204, 102, 204), new Color(102, 204, 204),
 				new Color(218, 170, 0) };
@@ -459,32 +461,55 @@ public class Board extends JPanel implements ActionListener,Serializable {
                 showPauseMenu(); // ESC 키를 누르면 일시정지 메뉴 표시
                 return;
             }
-			
 
-			switch (keycode) {
-			case KeyEvent.VK_LEFT:
-				tryMove(curPiece, curX - 1, curY);
-				break;
-			case KeyEvent.VK_RIGHT:
-				tryMove(curPiece, curX + 1, curY);
-				break;
-			case KeyEvent.VK_DOWN:
-				tryMove(curPiece.rotateRight(), curX, curY);
-				break;
-			case KeyEvent.VK_UP:
-				tryMove(curPiece.rotateLeft(), curX, curY);
-				break;
-			case KeyEvent.VK_SPACE:
-				dropDown();
-				break;
-			case 'd':
-				oneLineDown();
-				break;
-			case 'D':
-				oneLineDown();
-				break;
+			// Player 1 (HJKL)
+			if (!isPaused) {
+				switch (keycode) {
+					case 'h':
+						// Handle move left
+						tryMove(curPiece, curX - 1, curY);
+						break;
+					case 'j':
+						// Handle move down
+						break;
+					case 'k':
+						// Handle rotate
+						break;
+					case 'l':
+						// Handle move right
+						break;
+				}
 			}
-
+			// Player 2 (Arrow keys)
+			if (!isPaused) {
+				switch (keycode) {
+					case KeyEvent.VK_LEFT:
+						tryMove(curPiece, curX - 1, curY);
+						break;
+					case KeyEvent.VK_RIGHT:
+						tryMove(curPiece, curX + 1, curY);
+						break;
+					case KeyEvent.VK_DOWN:
+						tryMove(curPiece.rotateRight(), curX, curY);
+						break;
+					case KeyEvent.VK_UP:
+						tryMove(curPiece.rotateLeft(), curX, curY);
+						break;
+					case KeyEvent.VK_SPACE:
+						dropDown();
+						break;
+					case 'd':
+						oneLineDown();
+						break;
+					case 'D':
+						oneLineDown();
+						break;
+				}
+			}
 		}
 	}
+
+
+
 }
+
