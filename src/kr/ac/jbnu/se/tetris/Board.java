@@ -1,6 +1,6 @@
 package kr.ac.jbnu.se.tetris;
 
-import java.awt.CardLayout;
+
 import java.awt.Color; 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -30,10 +30,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	boolean isFallingFinished = false;
 	boolean isStarted = false;
 	boolean isPaused = false;
-	int numLinesRemoved = 0;
+	int numLinesRemoved;
 	int curX = 0; //현재 블록의 위치를 나타내는 변수
 	int curY = 0; //현재 블록의 위치를 나타내는 변수
 	JLabel statusbar; //게임 상태를 표시하는 레이블
+	JLabel levelbar;//게임 레벨을 나타내는 레이블
 	Shape curPiece; //현재 Tetris블록을 나타내는 객체
 	Tetrominoes[] board; 
 	String savestatusbarpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\savestatusbar.txt";
@@ -41,12 +42,13 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
 	String breakmusicpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\break.wav";
 	
-	
+	int level;
 	Shape nextPiece; //다음 블럭을 나타냄
+	
+	private int rotateCount = 0;
 	
 	int nextX=10;
 	int nextY=10;
-	private JLabel nextPieceLabel;
 	
 	private Tetris tetris;
 	public Board(Tetris parent) { //Tetris에게 상속받음
@@ -58,6 +60,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
 		timer.start(); //타이머 시작
 		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
+		levelbar=parent.getLevelBar();
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
 		clearBoard(); //보드 초기화
@@ -130,7 +133,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 	public void paint(Graphics g) {
 		super.paint(g); //부모 클래스의 paint를 호출하여 화면 지움(새로운 프레임 그릴 준비)
-
 		Dimension size = getSize(); ////게임 화면의 크기를 가져옴
 		int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();//화면높이-보드 높이*블록 크기
 
@@ -199,11 +201,15 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	private void newPiece() { //새로운 Tetromino블록을 생성하고 아래로 이동시킴
+		rotateCount = 0;
 		Audio endMusic;
 		curPiece.setRandomShape(); //무작위 블록 할당
 		curX = BoardWidth / 2 + 1; //변수를 게임 보드 중앙에서 시작하도록 설정
 		curY = BoardHeight - 1 + curPiece.minY();//보드 상단에서 아래로 이동하도록 설정
-
+		level=numLinesRemoved;
+		if (level >= 2) {
+		    timer.setDelay(200); // level이 2이상일 때 빠른 속도로 설정
+		}
 		if (!tryMove(curPiece, curX, curY)) { //새로 생성된 우 초기 위치가 유효한지 나타냄
 			curPiece.setShape(Tetrominoes.NoShape);
 			timer.stop();
@@ -218,7 +224,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	public void saveStatusBar(String filename) {
 		try(BufferedWriter writer=new BufferedWriter(new FileWriter(filename))){
 			writer.write(String.valueOf(numLinesRemoved));
-			System.out.print(String.valueOf(numLinesRemoved));
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -229,6 +234,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	        String statusBarText = reader.readLine();
 	        numLinesRemoved=Integer.parseInt(statusBarText);
 	        statusbar.setText(statusBarText);
+	        levelbar.setText("Level"+Integer.toString(numLinesRemoved/3));
 	    } catch (IOException e) {
 	        e.printStackTrace();
 	    }
@@ -260,7 +266,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			            	
 					 enteredName = nameField.getText();
 					 saveScore2(enteredName);
-			         System.out.println(enteredName);
 			         
 			        }
 			 });
@@ -311,7 +316,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				for(int i=0;i<3;i++)
 				{
 					writer.write(names[i]+" : "+scores[i]);
-					System.out.println(names[i]+" : "+scores[i]);
 					writer.newLine();
 				}
 				writer.close();
@@ -370,6 +374,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		if (numFullLines > 0) { //한게 이상 제거 되었다면
 			numLinesRemoved += numFullLines; //전체 제거된 수에 더함
 			statusbar.setText(String.valueOf(numLinesRemoved)); //상태 표시줄에 추가
+			if(level==0) level=1;
+			levelbar.setText("Level"+Integer.toString(level));
 			isFallingFinished = true; //블록이 더이상 떨어지지 않도록
 			curPiece.setShape(Tetrominoes.NoShape); //새로운 블록 생성 준비
 			repaint();
@@ -386,6 +392,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		g.setColor(color);
 		g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
 		//사각형을 그림 , x,y는 왼쪽 상단 모서리의 좌표를 나타냄
+		if(level>=2)
+		{
+			g.setColor(new Color(238,238,238));
+		}
+			
 		g.setColor(color.brighter()); //가장자리 강조
 		g.drawLine(x, y + squareHeight() - 1, x, y);
 		g.drawLine(x, y, x + squareWidth() - 1, y);
@@ -481,6 +492,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					pause();
 					return;
 				}
+				if (keycode == 'q' || keycode == 'Q') {
+					numLinesRemoved=10;
+					return; //테스트용
+				}
 				if (isPaused)
 					return;
 				//재시작기능
@@ -506,12 +521,24 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					tryMove(curPiece, curX + 1, curY);
 
 				} else if (keycode == TetrisKeySetting.keyMappings.get("RotateLeft")) {
-
-					tryMove(curPiece.rotateLeft(), curX, curY);
+					if(rotateCount>3&&level>=3) {
+						
+					}
+					else
+					{
+						tryMove(curPiece.rotateLeft(), curX, curY);
+						rotateCount++;
+					}
 
 				} else if (keycode == TetrisKeySetting.keyMappings.get("RotateRight")) {
-
-					tryMove(curPiece.rotateRight(), curX, curY);
+					if(rotateCount>3&&level>=3) {
+						
+					}
+					else
+					{
+						tryMove(curPiece.rotateRight(), curX, curY);
+						rotateCount++;
+					}
 
 				} else if (keycode == TetrisKeySetting.keyMappings.get("MoveDown")) {
 

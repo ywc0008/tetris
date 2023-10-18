@@ -19,8 +19,8 @@ public class TetrisKeySetting extends JFrame {
     private int moveLeftKeyCode = KeyEvent.VK_LEFT;
     private int moveRightKeyCode = KeyEvent.VK_RIGHT;
     private int rotateLeftKeyCode = KeyEvent.VK_UP;
-    private int rotateRightKeyCode = KeyEvent.VK_SHIFT;
-    private int moveDownKeyCode = KeyEvent.VK_DOWN;
+    private int rotateRightKeyCode = KeyEvent.VK_DOWN;
+    private int moveDownKeyCode = KeyEvent.VK_D;
     private int dropDownKeyCode = KeyEvent.VK_SPACE;
 
     public TetrisKeySetting() {
@@ -134,7 +134,6 @@ public class TetrisKeySetting extends JFrame {
         keyMappings.put(keyName, keyCode);
         for (String key : keyMappings.keySet()) {
             String value = keyMappings.get(key).toString();
-            System.out.println(key + " " + value);
         }
     }
 
@@ -186,8 +185,6 @@ public class TetrisKeySetting extends JFrame {
     public static void main(String[] args) {
         TetrisKeySetting keySettings = new TetrisKeySetting();
         keySettings.setVisible(true);
-
-        //dd
     }
 }
 

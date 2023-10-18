@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 public class Tetris extends JFrame implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	JLabel levelbar;
 	JLabel statusbar; // 텍스트 정보를 표시
     JPanel lobbyPanel; // 로비 패널
     JButton startButton; // 게임 시작 버튼
@@ -106,6 +107,7 @@ public class Tetris extends JFrame implements Serializable {
         backgroundMusic.bgmStart();
         getContentPane().removeAll(); // 현재 모든 구성 요소를 제거
         getContentPane().add(lobbyPanel); // 로비 패널 추가
+        remove(levelbar);
         remove(statusbar); // 점수 표시 제거
         revalidate(); // 화면 다시 그리기
         repaint();
@@ -115,6 +117,10 @@ public class Tetris extends JFrame implements Serializable {
     public JLabel getStatusBar() { // status를 반환하는 매서드
         return statusbar;
     }
+    public JLabel getLevelBar() { // status를 반환하는 매서드
+        return levelbar;
+    }
+    
     static String[] record=new String[3];
     public void loadRank()
     {
@@ -158,7 +164,9 @@ public class Tetris extends JFrame implements Serializable {
         backgroundMusic.bgmStart();
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
+        levelbar=new JLabel("LEVEL 1");
         add(statusbar, BorderLayout.SOUTH); // 남쪽에 추가
+        add(levelbar, BorderLayout.NORTH); // 남쪽에 추가
         Board board = new Board(this);
         add(board);
         board.start();
@@ -176,6 +184,7 @@ public class Tetris extends JFrame implements Serializable {
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
         add(statusbar, BorderLayout.SOUTH); // 남쪽에 추가
+        add(levelbar, BorderLayout.NORTH); // 남쪽에 추가
         Board board = new Board(this);
         add(board);
         board.start();
