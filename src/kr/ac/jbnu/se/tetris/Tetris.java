@@ -184,6 +184,17 @@ public class Tetris extends JFrame implements Serializable {
         revalidate();
         repaint();
 
+        this.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                board1.processKey(e);
+                board2.processKey(e);
+            }
+        });
+
+        this.requestFocus(); // 메인 프레임에 포커스를 주어 키 이벤트를 수신하게 합니다.
+        this.requestFocusInWindow();
+
 
 
     }

@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.*;
 import javax.swing.JLabel;
@@ -21,8 +22,8 @@ import javax.swing.border.EmptyBorder;
 
 import java.io.*;
 
-public class Board extends JPanel implements ActionListener,Serializable {
-	
+public class Board extends JPanel implements ActionListener,Serializable,KeyListener{
+
 	private static final long serialVersionUID = 1L;
 
 	final int BoardWidth = 10;
@@ -41,12 +42,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	int curY1;
 	JLabel statusbar; //게임 상태를 표시하는 레이블
 	Tetrominoes[] board;
-	private int playerMode=1;
+	private String keyConfig;
 
 
-	
 	Shape nextPiece; //다음 블럭을 나타냄
-
 
 
 	public Board(Tetris parent) {
@@ -55,22 +54,85 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 	public Board(Tetris parent, String keyConfig) {
 		setFocusable(true);
+		this.keyConfig = keyConfig;
 		curPiece = new Shape();
 		timer = new Timer(400, this);
 		timer.start();
 
 		statusbar = parent.getStatusBar();
 		board = new Tetrominoes[BoardWidth * BoardHeight];
-		if("WASD".equals(keyConfig)) {
-			addKeyListener(new TAdapter());
-			playerMode = 2;
-		} else if("ARROW".equals(keyConfig)) {
-			addKeyListener(new TAdapter());
-		}
+		addKeyListener(this);  // 여기를 수정
 		clearBoard();
 	}
 
-	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		processKey(e);
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+	}
+
+	public void processKey(KeyEvent e) {
+		if (!isStarted || curPiece.getShape() == Tetrominoes.NoShape) {
+			return;
+		}
+		int keycode = e.getKeyCode();
+
+		if (keycode == 'p' || keycode == 'P') {
+			pause();
+			return;
+		}
+		if (isPaused) {
+			return;
+		}
+
+		if (keycode == 'r' || keycode == 'R') {
+			start();
+			return;
+		}
+
+		if (keycode == KeyEvent.VK_ESCAPE) {
+			pause();
+			showPauseMenu();
+			return;
+		}
+		// Player 1 (오른쪽) - 방향키
+		if ("ARROW".equals(keyConfig)) {
+			if (keycode == KeyEvent.VK_UP) {
+				tryMove(curPiece.rotateLeft(), curX, curY);
+			} else if (keycode == KeyEvent.VK_DOWN) {
+				tryMove(curPiece, curX, curY - 1);
+			} else if (keycode == KeyEvent.VK_LEFT) {
+				tryMove(curPiece, curX - 1, curY);
+			} else if (keycode == KeyEvent.VK_RIGHT) {
+				tryMove(curPiece, curX + 1, curY);
+			} else if (keycode == KeyEvent.VK_SPACE) {
+				dropDown();
+			}
+		}
+		// Player 2 (왼쪽) - WASD
+		else if ("WASD".equals(keyConfig)) {
+			if (keycode == 'W') {
+				tryMove(curPiece1.rotateLeft(), curX1, curY1);
+			} else if (keycode == 'S') {
+				tryMove(curPiece1, curX1, curY1 - 1);
+			} else if (keycode == 'A') {
+				tryMove(curPiece1, curX1 - 1, curY1);
+			} else if (keycode == 'D') {
+				tryMove(curPiece1, curX1 + 1, curY1);
+			} else if (keycode == 'X') {
+				dropDown();
+			}
+		}
+	}
+
+
 	public void actionPerformed(ActionEvent e) {
 		if (isFallingFinished) { //떨어지는게 끝났으면
 			isFallingFinished = false; //false로 바꾸고
@@ -93,31 +155,32 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	public void start() { //게임을 초기화하고 새로운 게임을 시작
-		
+
 		if (isPaused) //게임이 일시정지상태면 작업수행 x
 			return;
-		
-		isStarted = true; 
+
+		isStarted = true;
 		isFallingFinished = false;
-		numLinesRemoved = 0; 
+		numLinesRemoved = 0;
 		clearBoard(); //게임 보드 초기화
 
 		newPiece();
 		timer.start();
 	}
+
 	public void restart() { //게임을 초기화하고 새로운 게임을 시작
-		
-		isPaused=true;
-		
-		isStarted = true; 
+
+		isPaused = true;
+
+		isStarted = true;
 		isFallingFinished = false;
-		numLinesRemoved = 0; 
+		numLinesRemoved = 0;
 		clearBoard(); //게임 보드 초기화
 
 		newPiece();
 		timer.start();
 	}
-	
+
 
 	private void pause() {
 		if (!isStarted)  //게임이 시작되지 않으면 일시정지 불가능
@@ -200,7 +263,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			int x = curX + curPiece.x(i); //블록의 각 부분 블록의 위치를 게임 보드 좌표로 변환
 			int y = curY - curPiece.y(i);
 			board[(y * BoardWidth) + x] = curPiece.getShape();
-		}	//블록이 게임 보드에 떨어진 것을 나타냄
+		}    //블록이 게임 보드에 떨어진 것을 나타냄
 
 		removeFullLines(); //행이 가득 찼다면, 이 행을 제거하고 행이 제거된 후의 게임 상태를 업데이트
 
@@ -219,104 +282,95 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			timer.stop();
 			isStarted = false;
 			statusbar.setText("game over");
-			endMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav",true);
-	        endMusic.bgmStart();
-	        saveScore(numLinesRemoved);
+			endMusic = new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav", true);
+			endMusic.bgmStart();
+			saveScore(numLinesRemoved);
 		}
 	}
+
 	String enteredName;
-	
-	public void saveScore(int numLinesRemoved)
-	{
-			JFrame frame=new JFrame("이름 입력");
-			JPanel panel=new JPanel();
-			JLabel nameLabel=new JLabel("이름: ");
-			JTextField nameField=new JTextField(20);
-					
-			JButton submitButton=new JButton("입력 완료");
-			panel.add(nameLabel);
-			panel.add(nameField);
-			frame.add(panel);
-			panel.add(submitButton);
 
-			
-			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			frame.setSize(300,300);
-			frame.setVisible(true);
+	public void saveScore(int numLinesRemoved) {
+		JFrame frame = new JFrame("이름 입력");
+		JPanel panel = new JPanel();
+		JLabel nameLabel = new JLabel("이름: ");
+		JTextField nameField = new JTextField(20);
 
-			 submitButton.addActionListener(new ActionListener() {
-				 public void actionPerformed(ActionEvent e) {
-			                // 텍스트 필드의 내용을 String 객체에 저장
-			            	
-					 enteredName = nameField.getText();
-					 saveScore2(enteredName);
-			         System.out.println(enteredName);
-			         
-			        }
-			 });
-		
-		
-		
+		JButton submitButton = new JButton("입력 완료");
+		panel.add(nameLabel);
+		panel.add(nameField);
+		frame.add(panel);
+		panel.add(submitButton);
+
+
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setSize(300, 300);
+		frame.setVisible(true);
+
+		submitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// 텍스트 필드의 내용을 String 객체에 저장
+
+				enteredName = nameField.getText();
+				saveScore2(enteredName);
+				System.out.println(enteredName);
+
+			}
+		});
+
+
 	}
-	
-	
-	public void saveScore2(String enteredName)
-	{
-		
-		try
-		{
-			String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
-			File file=new File(scoreRecord);
-			BufferedReader reader=new BufferedReader(new FileReader(file));
-			String[] names=new String[3];
-			int[] scores =new int[3];
-			
-			for(int i=0;i<3;i++)
-			{
-				String line=reader.readLine();
-				String[] parts=line.split(" : ");
-				names[i]=parts[0];
-				scores[i]=Integer.parseInt(parts[1]);
+
+
+	public void saveScore2(String enteredName) {
+
+		try {
+			String scoreRecord = System.getProperty("user.dir") + "\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+			File file = new File(scoreRecord);
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String[] names = new String[3];
+			int[] scores = new int[3];
+
+			for (int i = 0; i < 3; i++) {
+				String line = reader.readLine();
+				String[] parts = line.split(" : ");
+				names[i] = parts[0];
+				scores[i] = Integer.parseInt(parts[1]);
 			}
 			reader.close();
-			
-			
-			boolean updated=false;
-			for(int i=0;i<3;i++)
-			{
-				if(numLinesRemoved>=scores[i])
-				{
-					scores[i]=numLinesRemoved;
-					names[i]=enteredName;
-			        updated=true;
+
+
+			boolean updated = false;
+			for (int i = 0; i < 3; i++) {
+				if (numLinesRemoved >= scores[i]) {
+					scores[i] = numLinesRemoved;
+					names[i] = enteredName;
+					updated = true;
 					break;
 
 				}
 			}
-			if(updated)
-			{
-				BufferedWriter writer=new BufferedWriter(new FileWriter(file,false));
-				for(int i=0;i<3;i++)
-				{
-					writer.write(names[i]+" : "+scores[i]);
-					System.out.println(names[i]+" : "+scores[i]);
+			if (updated) {
+				BufferedWriter writer = new BufferedWriter(new FileWriter(file, false));
+				for (int i = 0; i < 3; i++) {
+					writer.write(names[i] + " : " + scores[i]);
+					System.out.println(names[i] + " : " + scores[i]);
 					writer.newLine();
 				}
 				writer.close();
 			}
-			
-		}
-		catch(IOException e) {
+
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 	}
 
 	private boolean tryMove(Shape newPiece, int newX, int newY) {//이동이 유효한지 판단
 		for (int i = 0; i < 4; ++i) {
 			int x = newX + newPiece.x(i); //블록의 x좌표를 newx에 더해 새로운 X좌표
-			int y = newY - newPiece.y(i); 
+			int y = newY - newPiece.y(i);
 			if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
 				return false; // 계산된 좌표가 보드를 벗어난 경우 false
 			if (shapeAt(x, y) != Tetrominoes.NoShape) //이미 블록이 존재하는 경우, 이동을 실패하고 false
@@ -350,8 +404,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					for (int j = 0; j < BoardWidth; ++j)
 						board[(k * BoardWidth) + j] = shapeAt(j, k + 1); //각 줄을 한칸씩 아래로 이동
 				}
-		    	breakMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/break.wav",true);
-		        breakMusic.bgmStart();
+				breakMusic = new Audio("src/kr/ac/jbnu/se/tetris/audio/break.wav", true);
+				breakMusic.bgmStart();
 			}
 		}
 
@@ -365,9 +419,9 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	private void drawSquare(Graphics g, int x, int y, Tetrominoes shape) {
-		Color colors[] = { new Color(0, 0, 0), new Color(204, 102, 102), new Color(102, 204, 102),
+		Color colors[] = {new Color(0, 0, 0), new Color(204, 102, 102), new Color(102, 204, 102),
 				new Color(102, 102, 204), new Color(204, 204, 102), new Color(204, 102, 204), new Color(102, 204, 204),
-				new Color(218, 170, 0) };
+				new Color(218, 170, 0)};
 		//블록 모양에 해당하는 색상을 배열에 저장
 		Color color = colors[shape.ordinal()];
 		//해당하는 색상을 선택
@@ -377,128 +431,132 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		g.setColor(color.brighter()); //가장자리 강조
 		g.drawLine(x, y + squareHeight() - 1, x, y);
 		g.drawLine(x, y, x + squareWidth() - 1, y);
-		
+
 		g.setColor(color.darker());
 		g.drawLine(x + 1, y + squareHeight() - 1, x + squareWidth() - 1, y + squareHeight() - 1);
 		g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
 	}
-	
-	 public void saveGame(String filename) {
-		    try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-		        outputStream.writeObject(this.board); // Board 클래스 자체를 직렬화하여 저장
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-	    }
-	    public void loadGame(String filename) {
-	          try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-	            this.board = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
-	            repaint();
-	          } catch (IOException | ClassNotFoundException e) {
-	              e.printStackTrace();
-	          }
-	   }
-	 //esc 메뉴
-	 private void showPauseMenu() {
-	        JFrame frame = new JFrame("Pause Menu");
-	        frame.setSize(200, 150);
-	        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-	        frame.setLocationRelativeTo(this);
-	        frame.setResizable(false);
 
-	        JPanel pausePanel = new JPanel(new GridLayout(2, 1));
-	        pausePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-	        frame.add(pausePanel);
-
-	        JButton resumeButton = new JButton("계속하기");
-	        JButton saveButton = new JButton("저장하기");
-	        JButton quitButton = new JButton("끝내기");
-
-
-	        pausePanel.add(resumeButton);
-	        pausePanel.add(saveButton);
-	        pausePanel.add(quitButton);
-
-	        resumeButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                frame.dispose(); // 팝업 창 닫기
-	                pause(); // 게임 일시정지 해제
-	            }
-	        });
-	        
-	        saveButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	            	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
-	            	saveGame(savepath);
-	            	System.exit(0); // 게임 종료
-	            }
-	        });
-
-	        quitButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                System.exit(0); // 게임 종료
-	            }
-	        });
-
-
-
-	        frame.setVisible(true);
-	    }
-
-class TAdapter extends KeyAdapter {
-	public void keyPressed(KeyEvent e) {
-		if (!isStarted || curPiece.getShape() == Tetrominoes.NoShape) {
-			return;
+	public void saveGame(String filename) {
+		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+			outputStream.writeObject(this.board); // Board 클래스 자체를 직렬화하여 저장
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		int keycode = e.getKeyCode();
+	}
 
-		if (keycode == 'p' || keycode == 'P') {
-			pause();
-			return;
+	public void loadGame(String filename) {
+		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+			this.board = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
+			repaint();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-		if (isPaused)
-			return;
+	}
 
-		if (keycode == 'r' || keycode == 'R') {
-			start();
-			return;
-		}
+	//esc 메뉴
+	private void showPauseMenu() {
+		JFrame frame = new JFrame("Pause Menu");
+		frame.setSize(200, 150);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setLocationRelativeTo(this);
+		frame.setResizable(false);
 
-		if (keycode == KeyEvent.VK_ESCAPE) {
-			pause();
-			showPauseMenu();
-			return;
-		}
-		// Player 1 (오른쪽) - 방향키
-		if (playerMode == 1) {
-			if (keycode == KeyEvent.VK_UP) {
-				tryMove(curPiece.rotateLeft(), curX, curY);
-			} else if (keycode == KeyEvent.VK_DOWN) {
-				tryMove(curPiece, curX, curY - 1);
-			} else if (keycode == KeyEvent.VK_LEFT) {
-				tryMove(curPiece, curX - 1, curY);
-			} else if (keycode == KeyEvent.VK_RIGHT) {
-				tryMove(curPiece, curX + 1, curY);
-			} else if (keycode == KeyEvent.VK_SPACE) {
-				dropDown();
-			}}
-		// Player 2 (왼쪽) - WASD
-		else if (playerMode == 2) {
-			if (keycode == 'W') {
-				tryMove(curPiece1.rotateLeft(), curX1, curY1);
-			} else if (keycode == 'S') {
-				tryMove(curPiece1, curX1, curY1 - 1);
-			} else if (keycode == 'A') {
-				tryMove(curPiece1, curX1 - 1, curY1);
-			} else if (keycode == 'D') {
-				tryMove(curPiece1, curX1 + 1, curY1);
-			} else if (keycode == 'X') {
-				dropDown();
+		JPanel pausePanel = new JPanel(new GridLayout(2, 1));
+		pausePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		frame.add(pausePanel);
+
+		JButton resumeButton = new JButton("계속하기");
+		JButton saveButton = new JButton("저장하기");
+		JButton quitButton = new JButton("끝내기");
+
+
+		pausePanel.add(resumeButton);
+		pausePanel.add(saveButton);
+		pausePanel.add(quitButton);
+
+		resumeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose(); // 팝업 창 닫기
+				pause(); // 게임 일시정지 해제
 			}
-		}
-	}}
+		});
 
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String savepath = System.getProperty("user.dir") + "\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
+				saveGame(savepath);
+				System.exit(0); // 게임 종료
+			}
+		});
+
+		quitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0); // 게임 종료
+			}
+		});
+
+
+		frame.setVisible(true);
+	}
 }
+
+//class TAdapter extends KeyAdapter {
+//	public void keyPressed(KeyEvent e) {
+//		if (!isStarted || curPiece.getShape() == Tetrominoes.NoShape) {
+//			return;
+//		}
+//		int keycode = e.getKeyCode();
+//
+//		if (keycode == 'p' || keycode == 'P') {
+//			pause();
+//			return;
+//		}
+//		if (isPaused)
+//			return;
+//
+//		if (keycode == 'r' || keycode == 'R') {
+//			start();
+//			return;
+//		}
+//
+//		if (keycode == KeyEvent.VK_ESCAPE) {
+//			pause();
+//			showPauseMenu();
+//			return;
+//		}
+//		// Player 1 (오른쪽) - 방향키
+//		if ("ARROW".equals(keyConfig)) {
+//			if (keycode == KeyEvent.VK_UP) {
+//				tryMove(curPiece.rotateLeft(), curX, curY);
+//			} else if (keycode == KeyEvent.VK_DOWN) {
+//				tryMove(curPiece, curX, curY - 1);
+//			} else if (keycode == KeyEvent.VK_LEFT) {
+//				tryMove(curPiece, curX - 1, curY);
+//			} else if (keycode == KeyEvent.VK_RIGHT) {
+//				tryMove(curPiece, curX + 1, curY);
+//			} else if (keycode == KeyEvent.VK_SPACE) {
+//				dropDown();
+//			}
+//		}
+//		// Player 2 (왼쪽) - WASD
+//		else if ("WASD".equals(keyConfig)) {
+//			if (keycode == 'W') {
+//				tryMove(curPiece1.rotateLeft(), curX1, curY1);
+//			} else if (keycode == 'S') {
+//				tryMove(curPiece1, curX1, curY1 - 1);
+//			} else if (keycode == 'A') {
+//				tryMove(curPiece1, curX1 - 1, curY1);
+//			} else if (keycode == 'D') {
+//				tryMove(curPiece1, curX1 + 1, curY1);
+//			} else if (keycode == 'X') {
+//				dropDown();
+//			}
+//		}
+//	}
+//	}
+//
+//}
 
 
 
