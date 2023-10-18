@@ -1,5 +1,6 @@
 package kr.ac.jbnu.se.tetris;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,8 +42,17 @@ public class Tetris extends JFrame implements Serializable {
     
     public Tetris() {
     	lobbyPanel = new JPanel();
-        lobbyPanel = new JPanel();
+        
+        Dimension buttonSize=new Dimension(200,50);
         startButton = new JButton("게임 시작");
+        settingButton=new JButton("환경 설정");
+        loadButton=new JButton("불러오기");
+        rankButton=new JButton("랭킹");
+        startButton.setPreferredSize(buttonSize);
+        settingButton.setPreferredSize(buttonSize);
+        loadButton.setPreferredSize(buttonSize);
+        rankButton.setPreferredSize(buttonSize);
+        
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 startGame(); // 게임 시작 버튼을 클릭하면 게임을 시작합니다.
@@ -50,25 +60,24 @@ public class Tetris extends JFrame implements Serializable {
         });
         
         
-        settingButton=new JButton("환경 설정");
         
-        loadButton=new JButton("불러오기");
+        
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	loadGameStart();
             }
         });
         
-        rankButton=new JButton("랭킹");
+        
         rankButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
             	loadRank();
             }
         });
 
-        lobbyPanel.add(startButton,BorderLayout.NORTH);
+        lobbyPanel.add(startButton,BorderLayout.CENTER);
         lobbyPanel.add(settingButton,BorderLayout.CENTER);
-        lobbyPanel.add(loadButton,BorderLayout.SOUTH);
+        lobbyPanel.add(loadButton,BorderLayout.CENTER);
         lobbyPanel.add(rankButton,BorderLayout.CENTER);
         add(lobbyPanel, BorderLayout.CENTER);
         
@@ -77,7 +86,7 @@ public class Tetris extends JFrame implements Serializable {
         backgroundMusic=new Audio(lobbywavpath,true);
         backgroundMusic.bgmStart();
         
-        setSize(200, 400);// 테트리스 창의 크기 설정
+        setSize(400, 800);// 테트리스 창의 크기 설정
         setTitle("Tetris"); // 창의 제목을 Tetris로 설정
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 창을 닫으면 프로그램 종료
     }
