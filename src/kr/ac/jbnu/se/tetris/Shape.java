@@ -1,12 +1,17 @@
 package kr.ac.jbnu.se.tetris;
+import java.io.Serializable;
 
 import java.util.Random;
 
-public class Shape {
-
-	private Tetrominoes pieceShape;
-	private int coords[][];
-	private int[][][] coordsTable;
+public class Shape implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Tetrominoes pieceShape; //변수 선언
+	private int coords[][]; //블럭의 좌표를 지정
+	private int[][][] coordsTable; //모든 블록의 가능한 회전 상태를 저장하는 3차원 배열
 
 	public Shape() {
 		coords = new int[4][2];
@@ -15,10 +20,14 @@ public class Shape {
 
 	public void setShape(Tetrominoes shape) {
 
-		coordsTable = new int[][][] { { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
-				{ { 0, -1 }, { 0, 0 }, { -1, 0 }, { -1, 1 } }, { { 0, -1 }, { 0, 0 }, { 1, 0 }, { 1, 1 } },
-				{ { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } }, { { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } },
-				{ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }, { { -1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } },
+		coordsTable = new int[][][] 
+				{ { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
+				{ { 0, -1 }, { 0, 0 }, { -1, 0 }, { -1, 1 } }, 
+				{ { 0, -1 }, { 0, 0 }, { 1, 0 }, { 1, 1 } },
+				{ { 0, -1 }, { 0, 0 }, { 0, 1 }, { 0, 2 } }, 
+				{ { -1, 0 }, { 0, 0 }, { 1, 0 }, { 0, 1 } },
+				{ { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } }, 
+				{ { -1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } },
 				{ { 1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } } };
 
 		for (int i = 0; i < 4; i++) {
@@ -31,18 +40,18 @@ public class Shape {
 	}
 
 	private void setX(int index, int x) {
-		coords[index][0] = x;
+		coords[index][0] = x; //특정좌표의 x값 설정
 	}
 
 	private void setY(int index, int y) {
-		coords[index][1] = y;
+		coords[index][1] = y; //특정 좌표의 y값 설정
 	}
 
-	public int x(int index) {
+	public int x(int index) { //특정좌표의 x값 가져옴
 		return coords[index][0];
 	}
 
-	public int y(int index) {
+	public int y(int index) { //특정좌표의 y값 가져옴
 		return coords[index][1];
 	}
 
@@ -52,7 +61,7 @@ public class Shape {
 
 	public void setRandomShape() {
 		Random r = new Random();
-		int x = Math.abs(r.nextInt()) % 7 + 1;
+		int x = Math.abs(r.nextInt()) % 7 + 1; //1에서 7사이의 무작위 정수를 나타내기 위함
 		Tetrominoes[] values = Tetrominoes.values();
 		setShape(values[x]);
 	}
@@ -87,7 +96,7 @@ public class Shape {
 		return result;
 	}
 
-	public Shape rotateRight() {
+	public Shape rotateRight() { //블록 좌표 좌회전 또는 우회전
 		if (pieceShape == Tetrominoes.SquareShape)
 			return this;
 
