@@ -1,10 +1,7 @@
 package kr.ac.jbnu.se.tetris;
 
 
-import java.awt.Color; 
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -21,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 import java.io.*;
 
 public class Board extends JPanel implements ActionListener,Serializable {
-	
+
 	private static final long serialVersionUID = 1L;
 	final int BoardWidth = 10; //게임 창 크기 가로 10
 	final int BoardHeight = 22; //세로 22
@@ -34,39 +31,41 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	int curX = 0; //현재 블록의 위치를 나타내는 변수
 	int curY = 0; //현재 블록의 위치를 나타내는 변수
 	JLabel statusbar; //게임 상태를 표시하는 레이블
-	JLabel levelbar;//게임 레벨을 나타내는 레이블
+	JLabel levelbar;
 	Shape curPiece; //현재 Tetris블록을 나타내는 객체
-	Tetrominoes[] board; 
+	Tetrominoes[] board;
 	String savestatusbarpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\savestatusbar.txt";
 	String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
 	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
 	String breakmusicpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\break.wav";
-	
+
 	int level;
 	Shape nextPiece; //다음 블럭을 나타냄
-	
+
 	private int rotateCount = 0;
-	
+
 	int nextX=10;
 	int nextY=10;
-	
+
+	int kko=0;
+
 	private Tetris tetris;
 	public Board(Tetris parent) { //Tetris에게 상속받음
-		
+
 		tetris=parent;
-	    
 		setFocusable(true); //키보드 이벤트 처리 가능
 		curPiece = new Shape(); //현재 테트리스 블록을 나타내는 curPiece변수에 할당
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
 		timer.start(); //타이머 시작
+		levelbar=new JLabel("LEVEL 1");
+		add(levelbar, BorderLayout.EAST);
 		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
 		clearBoard(); //보드 초기화
-
 	}
 
-	
+
 	public void actionPerformed(ActionEvent e) {
 		if (isFallingFinished) { //떨어지는게 끝났으면
 			isFallingFinished = false; //false로 바꾸고
@@ -89,31 +88,31 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	public void start() { //게임을 초기화하고 새로운 게임을 시작
-		
+
 		if (isPaused) //게임이 일시정지상태면 작업수행 x
 			return;
-		
-		isStarted = true; 
+
+		isStarted = true;
 		isFallingFinished = false;
-		numLinesRemoved = 0; 
+		numLinesRemoved = 0;
 		clearBoard(); //게임 보드 초기화
 
 		newPiece();
 		timer.start();
 	}
 	public void restart() { //게임을 초기화하고 새로운 게임을 시작
-		
+
 		isPaused=true;
-		
-		isStarted = true; 
+
+		isStarted = true;
 		isFallingFinished = false;
-		numLinesRemoved = 0; 
+		numLinesRemoved = 0;
 		clearBoard(); //게임 보드 초기화
 
 		newPiece();
 		timer.start();
 	}
-	
+
 
 	private void pause() {
 		if (!isStarted)  //게임이 시작되지 않으면 일시정지 불가능
@@ -153,7 +152,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		}
 	}
 	private Timer softDropDelayTimer;
-	
+
 
 	private void dropDown() { //빨리 블록을 내리는 것
 		int newY = curY; //현재 와이좌표를 저장
@@ -205,13 +204,24 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		curPiece.setRandomShape(); //무작위 블록 할당
 		curX = BoardWidth / 2 + 1; //변수를 게임 보드 중앙에서 시작하도록 설정
 		curY = BoardHeight - 1 + curPiece.minY();//보드 상단에서 아래로 이동하도록 설정
-		level=numLinesRemoved;
+		level=numLinesRemoved/3;
+
 		if (level >= 2) {
-		    timer.setDelay(100); // level이 2이상일 때 빠른 속도로 설정
+			levelbar.setText("LEVEL 2");
+			timer.setDelay(400); // level이 2이상일 때 빠른 속도로 설정
+		}
+		else if(level >=3)
+		{
+			levelbar.setText("LEVEL 3");
+		}
+		else if(level >=4)
+		{
+			levelbar.setText("LEVEL 4");
 		}
 		else if(level>=5)
 		{
-			timer.setDelay(50);
+			statusbar.setText("LEVEL 5");
+			timer.setDelay(300);
 		}
 		if (!tryMove(curPiece, curX, curY)) { //새로 생성된 우 초기 위치가 유효한지 나타냄
 			curPiece.setShape(Tetrominoes.NoShape);
@@ -219,11 +229,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			isStarted = false;
 			statusbar.setText("game over");
 			endMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav",true);
-	        endMusic.bgmStart();
-	        saveScore(numLinesRemoved);
+			endMusic.bgmStart();
+			saveScore(numLinesRemoved);
 		}
 	}
-	
+
 	public void saveStatusBar(String filename) {
 		try(BufferedWriter writer=new BufferedWriter(new FileWriter(filename))){
 			writer.write(String.valueOf(numLinesRemoved));
@@ -233,61 +243,62 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	public void loadStatusbar(String filename) {
-	    try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
-	        String statusBarText = reader.readLine();
-	        numLinesRemoved=Integer.parseInt(statusBarText);
-	        statusbar.setText(statusBarText);
-	    } catch (IOException e) {
-	        e.printStackTrace();
-	    }
+		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+			String statusBarText = reader.readLine();
+			numLinesRemoved=Integer.parseInt(statusBarText);
+			statusbar.setText(statusBarText);
+			//여기 수정하기
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	
+
 	String enteredName;
 	public void saveScore(int numLinesRemoved)
 	{
-			JFrame frame=new JFrame("이름 입력");
-			JPanel panel=new JPanel();
-			JLabel nameLabel=new JLabel("이름: ");
-			JTextField nameField=new JTextField(20);
-					
-			JButton submitButton=new JButton("입력 완료");
-			panel.add(nameLabel);
-			panel.add(nameField);
-			frame.add(panel);
-			panel.add(submitButton);
+		JFrame frame=new JFrame("이름 입력");
+		JPanel panel=new JPanel();
+		JLabel nameLabel=new JLabel("이름: ");
+		JTextField nameField=new JTextField(20);
 
-			
-			frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-			frame.setSize(300,300);
-			frame.setVisible(true);
+		JButton submitButton=new JButton("입력 완료");
+		panel.add(nameLabel);
+		panel.add(nameField);
+		frame.add(panel);
+		panel.add(submitButton);
 
-			 submitButton.addActionListener(new ActionListener() {
-				 public void actionPerformed(ActionEvent e) {
-			                // 텍스트 필드의 내용을 String 객체에 저장
-			            	
-					 enteredName = nameField.getText();
-					 saveScore2(enteredName);
-			         
-			        }
-			 });
-		
-		
-		
+
+		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+		frame.setSize(300,300);
+		frame.setVisible(true);
+
+		submitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// 텍스트 필드의 내용을 String 객체에 저장
+
+				enteredName = nameField.getText();
+				saveScore2(enteredName);
+
+			}
+		});
+
+
+
 	}
-	
-	
+
+
 	public void saveScore2(String enteredName)
 	{
-		
+
 		try
 		{
-			
+
 			File file=new File(scoreRecord);
 			BufferedReader reader=new BufferedReader(new FileReader(file));
 			String[] names=new String[3];
 			int[] scores =new int[3];
-			
+
 			for(int i=0;i<3;i++)
 			{
 				String line=reader.readLine();
@@ -296,8 +307,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				scores[i]=Integer.parseInt(parts[1]);
 			}
 			reader.close();
-			
-			
+
+
 			boolean updated=false;
 			for(int i=0;i<3;i++)
 			{
@@ -305,15 +316,15 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				{
 					scores[i]=numLinesRemoved;
 					names[i]=enteredName;
-			        updated=true;
+					updated=true;
 					break;
 
 				}
 			}
 			if(updated)
 			{
-				
-				
+
+
 				BufferedWriter writer=new BufferedWriter(new FileWriter(file,false));
 				for(int i=0;i<3;i++)
 				{
@@ -322,19 +333,19 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				}
 				writer.close();
 			}
-			
+
 		}
 		catch(IOException e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 	}
 
 	private boolean tryMove(Shape newPiece, int newX, int newY) {//이동이 유효한지 판단
 		for (int i = 0; i < 4; ++i) {
 			int x = newX + newPiece.x(i); //블록의 x좌표를 newx에 더해 새로운 X좌표
-			int y = newY - newPiece.y(i); 
+			int y = newY - newPiece.y(i);
 			if (x < 0 || x >= BoardWidth || y < 0 || y >= BoardHeight)
 				return false; // 계산된 좌표가 보드를 벗어난 경우 false
 			if (shapeAt(x, y) != Tetrominoes.NoShape) //이미 블록이 존재하는 경우, 이동을 실패하고 false
@@ -363,13 +374,13 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			}
 
 			if (lineIsFull) { //꽉 찬 줄일경우
-				++numFullLines; //줄 수 증가 
+				++numFullLines; //줄 수 증가
 				for (int k = i; k < BoardHeight - 1; ++k) {
 					for (int j = 0; j < BoardWidth; ++j)
 						board[(k * BoardWidth) + j] = shapeAt(j, k + 1); //각 줄을 한칸씩 아래로 이동
 				}
-		    	breakMusic=new Audio(breakmusicpath,true);
-		        breakMusic.bgmStart();
+				breakMusic=new Audio(breakmusicpath,true);
+				breakMusic.bgmStart();
 			}
 		}
 
@@ -377,7 +388,6 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			numLinesRemoved += numFullLines; //전체 제거된 수에 더함
 			statusbar.setText(String.valueOf(numLinesRemoved)); //상태 표시줄에 추가
 			if(level==0) level=1;
-			levelbar.setText("Level"+Integer.toString(level));
 			isFallingFinished = true; //블록이 더이상 떨어지지 않도록
 			curPiece.setShape(Tetrominoes.NoShape); //새로운 블록 생성 준비
 			repaint();
@@ -391,17 +401,17 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		//블록 모양에 해당하는 색상을 배열에 저장
 		Color color = colors[shape.ordinal()];
 		//해당하는 색상을 선택
-		
-		
-		
+
+
+
 		if(level>=4)
 		{
 			g.setColor(new Color(238,238,238));
 		}
 		else
 			g.setColor(color);
-		
-		
+
+
 		g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
 		//사각형을 그림 , x,y는 왼쪽 상단 모서리의 좌표를 나타냄
 
@@ -416,149 +426,150 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		g.drawLine(x + 1, y + squareHeight() - 1, x + squareWidth() - 1, y + squareHeight() - 1);
 		g.drawLine(x + squareWidth() - 1, y + squareHeight() - 1, x + squareWidth() - 1, y + 1);
 	}
-	
-	 public void saveGame(String filename) {
-		    try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
-		        outputStream.writeObject(this.board); // Board 클래스 자체를 직렬화하여 저장
-		        saveStatusBar(savestatusbarpath);
-		    } catch (IOException e) {
-		        e.printStackTrace();
-		    }
-	    }
-	 public void loadGame(String filename) {
-	       try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
-	    	 loadStatusbar(savestatusbarpath);
-	         this.board = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
-	         repaint();
-	       } catch (IOException | ClassNotFoundException e) {
-	           e.printStackTrace();
-	       }
-	       
-	 }
-	 //esc 메뉴
-	 private void showPauseMenu() {
-	        JFrame frame = new JFrame("Pause Menu");
-	        frame.setSize(400, 200);
-	        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-	        frame.setLocationRelativeTo(this);
-	        frame.setResizable(false);
 
-	        JPanel pausePanel = new JPanel(new GridLayout(2, 1));
-	        pausePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-	        frame.add(pausePanel);
+	public void saveGame(String filename) {
+		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+			outputStream.writeObject(this.board); // Board 클래스 자체를 직렬화하여 저장
+			saveStatusBar(savestatusbarpath);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void loadGame(String filename) {
+		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+			loadStatusbar(savestatusbarpath);
+			this.board = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
+			repaint();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 
-	        JButton resumeButton = new JButton("계속하기");
-	        JButton saveButton = new JButton("저장 및 종료");
-	        JButton quitButton = new JButton("끝내기");
-	        JButton lobbyButton = new JButton("로비");
+	}
+	//esc 메뉴
+	private void showPauseMenu() {
+		JFrame frame = new JFrame("Pause Menu");
+		frame.setSize(200, 150);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setLocationRelativeTo(this);
+		frame.setResizable(false);
 
-	        pausePanel.add(resumeButton);
-	        pausePanel.add(saveButton);
-	        pausePanel.add(quitButton);
-	        pausePanel.add(lobbyButton);
+		JPanel pausePanel = new JPanel(new GridLayout(2, 1));
+		pausePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+		frame.add(pausePanel);
 
-	        resumeButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	                frame.dispose(); // 팝업 창 닫기
-	                pause(); // 게임 일시정지 해제
-	            }
-	        });
-	        
-	        saveButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	            	saveGame(savepath);
-	            	System.exit(0); // 게임 종료
-	            }
-	        });
+		JButton resumeButton = new JButton("계속하기");
+		JButton saveButton = new JButton("저장 및 종료");
+		JButton quitButton = new JButton("끝내기");
+		JButton lobbyButton = new JButton("로비");
 
-	        quitButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	            	System.exit(0); // 게임 종료
-	            }
-	        });
-	        lobbyButton.addActionListener(new ActionListener() {
-	            public void actionPerformed(ActionEvent e) {
-	            	frame.dispose(); // 팝업 창 닫기
-	            	tetris.showLobby();
-	            }
-	        });
+		pausePanel.add(resumeButton);
+		pausePanel.add(saveButton);
+		pausePanel.add(quitButton);
+		pausePanel.add(lobbyButton);
+
+		resumeButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose(); // 팝업 창 닫기
+				pause(); // 게임 일시정지 해제
+			}
+		});
+
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				saveGame(savepath);
+				System.exit(0); // 게임 종료
+			}
+		});
+
+		quitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0); // 게임 종료
+			}
+		});
+		lobbyButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frame.dispose(); // 팝업 창 닫기
+				tetris.showLobby();
+			}
+		});
 
 
 
-	        frame.setVisible(true);
-	    }
-	
-	 
+		frame.setVisible(true);
+	}
 
 
 
 
-		class TAdapter extends KeyAdapter {
-			public void keyPressed(KeyEvent e) {
 
 
-				int keycode = e.getKeyCode();
+	class TAdapter extends KeyAdapter {
+		public void keyPressed(KeyEvent e) {
 
-				if (keycode == 'p' || keycode == 'P') {
-					pause();
-					return;
+
+			int keycode = e.getKeyCode();
+
+			if (keycode == 'p' || keycode == 'P') {
+				pause();
+				return;
+			}
+			if (keycode == 'q' || keycode == 'Q') {
+				numLinesRemoved=10;
+				return; //테스트용
+			}
+			if (isPaused)
+				return;
+			//재시작기능
+			if (keycode == 'r' || keycode == 'R') {
+				start();
+				return;
+			}
+			//메뉴
+			if (keycode == KeyEvent.VK_ESCAPE) {
+				pause();
+				showPauseMenu(); // ESC 키를 누르면 일시정지 메뉴 표시
+
+
+				return;
+			}
+
+			if (keycode == TetrisKeySetting.keyMappings.get("MoveLeft")) {
+
+				tryMove(curPiece, curX - 1, curY);
+
+			} else if (keycode == TetrisKeySetting.keyMappings.get("MoveRight")) {
+
+				tryMove(curPiece, curX + 1, curY);
+
+			} else if (keycode == TetrisKeySetting.keyMappings.get("RotateLeft")) {
+				if(rotateCount>3&&level>=3) {
+
 				}
-				if (keycode == 'q' || keycode == 'Q') {
-					numLinesRemoved=10;
-					return; //테스트용
-				}
-				if (isPaused)
-					return;
-				//재시작기능
-				if (keycode == 'r' || keycode == 'R') {
-					start();
-					return;
-				}
-				//메뉴
-				if (keycode == KeyEvent.VK_ESCAPE) {
-					pause();
-					showPauseMenu(); // ESC 키를 누르면 일시정지 메뉴 표시
-
-
-					return;
+				else
+				{
+					tryMove(curPiece.rotateLeft(), curX, curY);
+					rotateCount++;
 				}
 
-				if (keycode == TetrisKeySetting.keyMappings.get("MoveLeft")) {
+			} else if (keycode == TetrisKeySetting.keyMappings.get("RotateRight")) {
+				if(rotateCount>3&&level>=3) {
 
-					tryMove(curPiece, curX - 1, curY);
-
-				} else if (keycode == TetrisKeySetting.keyMappings.get("MoveRight")) {
-
-					tryMove(curPiece, curX + 1, curY);
-
-				} else if (keycode == TetrisKeySetting.keyMappings.get("RotateLeft")) {
-					if(rotateCount>3&&level>=3) {
-						
-					}
-					else
-					{
-						tryMove(curPiece.rotateLeft(), curX, curY);
-						rotateCount++;
-					}
-
-				} else if (keycode == TetrisKeySetting.keyMappings.get("RotateRight")) {
-					if(rotateCount>3&&level>=3) {
-						
-					}
-					else
-					{
-						tryMove(curPiece.rotateRight(), curX, curY);
-						rotateCount++;
-					}
-
-				} else if (keycode == TetrisKeySetting.keyMappings.get("MoveDown")) {
-
-					oneLineDown();
-
-				} else if (keycode == TetrisKeySetting.keyMappings.get("DropDown")) {
-
-					dropDown();
 				}
+				else
+				{
+					tryMove(curPiece.rotateRight(), curX, curY);
+					rotateCount++;
+				}
+
+			} else if (keycode == TetrisKeySetting.keyMappings.get("MoveDown")) {
+
+				oneLineDown();
+
+			} else if (keycode == TetrisKeySetting.keyMappings.get("DropDown")) {
+
+				dropDown();
 			}
 		}
 	}
+}
+//d
