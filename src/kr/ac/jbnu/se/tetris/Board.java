@@ -206,22 +206,22 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		curY = BoardHeight - 1 + curPiece.minY();//보드 상단에서 아래로 이동하도록 설정
 		level=numLinesRemoved/3;
 
-		if (level >= 2) {
-			levelbar.setText("LEVEL 2");
-			timer.setDelay(400); // level이 2이상일 때 빠른 속도로 설정
-		}
-		else if(level >=3)
-		{
-			levelbar.setText("LEVEL 3");
+		if (level >= 5) {
+			levelbar.setText("LEVEL 5");
+			timer.setDelay(300);
 		}
 		else if(level >=4)
 		{
 			levelbar.setText("LEVEL 4");
 		}
-		else if(level>=5)
+		else if(level >=3)
 		{
-			statusbar.setText("LEVEL 5");
-			timer.setDelay(300);
+			levelbar.setText("LEVEL 3");
+		}
+		else if(level>=2)
+		{
+			levelbar.setText("LEVEL 2");
+			timer.setDelay(400);
 		}
 		if (!tryMove(curPiece, curX, curY)) { //새로 생성된 우 초기 위치가 유효한지 나타냄
 			curPiece.setShape(Tetrominoes.NoShape);
