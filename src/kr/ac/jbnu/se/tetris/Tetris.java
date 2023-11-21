@@ -13,15 +13,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-
-
-
+import javax.swing.*;
 
 
 public class Tetris extends JFrame implements Serializable {
@@ -38,6 +30,7 @@ public class Tetris extends JFrame implements Serializable {
     private TetrisKeySetting keySetting;
     String lobbywavpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
     String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+    String timeModeScoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\scoretimemode.txt";
     String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
     String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
 
@@ -54,12 +47,27 @@ public class Tetris extends JFrame implements Serializable {
         loadButton.setPreferredSize(buttonSize);
         rankButton.setPreferredSize(buttonSize);
 
+
+
+
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                startGame(); // 게임 시작 버튼을 클릭하면 게임을 시작합니다.
+                showStartConfirmationDialog(); // 게임 시작 버튼을 클릭하면 게임을 시작합니다.
+            }
+
+            private void showStartConfirmationDialog() {
+                String[] mode={"일반모드","타임어택 모드"};
+                int result = JOptionPane.showOptionDialog(null, "게임 모드를 선택해주세요", "게 임 모 드", 0,0,null,mode,mode[1]);
+                if (result == 0) {
+                    timemode=false;
+                    startGame(); // "예"를 선택하면 게임을 시작합니다.
+                }
+                else if (result == 1) {
+                    timemode=true;
+                    startGame(); // "예"를 선택하면 게임을 시작합니다.
+                }
             }
         });
-
 
 
 
@@ -116,19 +124,39 @@ public class Tetris extends JFrame implements Serializable {
         return statusbar;
     }
 
-    static String[] record=new String[3];
+    public boolean timemode=false;
+
+    public boolean getTimeMode()
+    {
+        return timemode;
+    }
+
+    static String[] record1=new String[3];
+    static String[] record2=new String[3];
     public void loadRank()
     {
         try
         {
-
-
             File file=new File(scoreRecord);
             BufferedReader reader=new BufferedReader(new FileReader(file));
             for(int i=0;i<3;i++)
             {
                 String line=reader.readLine();
-                record[i]=line;
+                record1[i]=line;
+            }
+            reader.close();
+        }
+        catch(IOException e) {
+            e.printStackTrace();
+        }
+        try
+        {
+            File file=new File(timeModeScoreRecord);
+            BufferedReader reader=new BufferedReader(new FileReader(file));
+            for(int i=0;i<3;i++)
+            {
+                String line=reader.readLine();
+                record2[i]=line;
             }
             reader.close();
         }
@@ -136,18 +164,21 @@ public class Tetris extends JFrame implements Serializable {
             e.printStackTrace();
         }
         JFrame frame=new JFrame("Rank");
-        JLabel label=new JLabel();
+        JLabel label1=new JLabel();
+        JLabel label2=new JLabel();
         JButton button=new JButton("확인");
 
         frame.setSize(300,300);
         frame.setLayout(new BorderLayout()); // 레이아웃 관리자 설정
-        label.setText("<html>"+"RANK"+"<br>"+record[0]+"<br>"+record[1]+"<br>"+record[2]+"</html>");;
+        label1.setText("<html>"+"NORMAL RANK"+"<br>"+record1[0]+"<br>"+record1[1]+"<br>"+record1[2]+"</html>");
+        label2.setText("<html>"+"TIME ATTACK RANK"+"<br>"+record2[0]+"<br>"+record2[1]+"<br>"+record2[2]+"</html>");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // 팝업 창 닫기
             }
         });
-        frame.add(label,BorderLayout.CENTER);
+        frame.add(label1,BorderLayout.WEST);
+        frame.add(label2,BorderLayout.EAST);
         frame.add(button,BorderLayout.SOUTH);
         frame.setVisible(true);
     }

@@ -22,6 +22,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	private static final long serialVersionUID = 1L;
 	final int BoardWidth = 10; //게임 창 크기 가로 10
 	final int BoardHeight = 22; //세로 22
+	//타임어택모드
+	public boolean timemode;
+	private JLabel elapsedTimeLabel; // 추가: 경과 시간을 표시하는 레이블
+	private int elapsedTime; // 추가: 경과 시간을 저장하는 변수
+	private int TIME_LIMIT_IN_SECONDS = 10; // 추가: 시간 제한을 정의
 
 	Timer timer;
 	boolean isFallingFinished = false;
@@ -36,6 +41,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	Tetrominoes[] board;
 	String savestatusbarpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\savestatusbar.txt";
 	String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+	String timeModeScoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\scoretimemode.txt";
 	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
 	String breakmusicpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\break.wav";
 
@@ -47,7 +53,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	int nextX=10;
 	int nextY=10;
 
-	int kko=0;
+	Timer timeLimitTimer;
 
 	private Tetris tetris;
 	public Board(Tetris parent) { //Tetris에게 상속받음
@@ -55,6 +61,14 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		tetris=parent;
 		setFocusable(true); //키보드 이벤트 처리 가능
 		curPiece = new Shape(); //현재 테트리스 블록을 나타내는 curPiece변수에 할당
+
+		//타임어택 모드
+		timemode=parent.getTimeMode();
+		if(timemode) {
+			elapsedTimeLabel = new JLabel("Elapsed Time: 0 seconds");
+			add(elapsedTimeLabel, BorderLayout.SOUTH);
+		}
+
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
 		timer.start(); //타이머 시작
 		levelbar=new JLabel("LEVEL 1");
@@ -63,6 +77,27 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
 		clearBoard(); //보드 초기화
+		if(timemode) {
+			timeLimitTimer = new Timer(1000, new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					elapsedTime++;
+					elapsedTimeLabel.setText("Elapsed Time: " + elapsedTime + " seconds");
+					if (elapsedTime >= TIME_LIMIT_IN_SECONDS) {
+						// 시간 제한을 초과하면 게임 종료 처리
+						timer.stop();
+						timeLimitTimer.stop();
+						isStarted = false;
+						statusbar.setText("Game over: Time limit exceeded");
+						// 추가: 시간 초기화
+						elapsedTime = 0;
+						// 추가: 다시 시간을 세도록 호출
+						saveScore(numLinesRemoved);
+					}
+				}
+			});
+			timeLimitTimer.start();
+		}
 	}
 
 
@@ -121,6 +156,9 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		isPaused = !isPaused; //일시중지 상태 여부
 		if (isPaused) { //퍼즈면 시간 정지
 			timer.stop();
+			if(timemode) {
+				timeLimitTimer.stop();
+			}
 			statusbar.setText("paused");
 		} else { //그렇지 않으면 시작
 			timer.start();
@@ -196,6 +234,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 		if (!isFallingFinished)
 			newPiece();
+		//타임어택 모드
+		if(timemode) {
+			elapsedTime = 0;
+		}
 	}
 
 	private void newPiece() { //새로운 Tetromino블록을 생성하고 아래로 이동시킴
@@ -204,28 +246,38 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		curPiece.setRandomShape(); //무작위 블록 할당
 		curX = BoardWidth / 2 + 1; //변수를 게임 보드 중앙에서 시작하도록 설정
 		curY = BoardHeight - 1 + curPiece.minY();//보드 상단에서 아래로 이동하도록 설정
+
 		level=numLinesRemoved/3;
+		if(timemode) {
+			if (level >= 5) {
+				TIME_LIMIT_IN_SECONDS = 4;
+			} else if (level == 4) {
+				TIME_LIMIT_IN_SECONDS = 5;
+			} else if (level == 3) {
+				TIME_LIMIT_IN_SECONDS = 6;
+			} else if (level == 2) {
+				TIME_LIMIT_IN_SECONDS = 8;
+			}
+		}
+
 
 		if (level >= 5) {
 			levelbar.setText("LEVEL 5");
 			timer.setDelay(300);
-		}
-		else if(level >=4)
-		{
+		} else if (level >= 4) {
 			levelbar.setText("LEVEL 4");
-		}
-		else if(level >=3)
-		{
+		} else if (level >= 3) {
 			levelbar.setText("LEVEL 3");
-		}
-		else if(level>=2)
-		{
+		} else if (level >= 2) {
 			levelbar.setText("LEVEL 2");
 			timer.setDelay(400);
 		}
-		if (!tryMove(curPiece, curX, curY)) { //새로 생성된 우 초기 위치가 유효한지 나타냄
+
+
+		if (!tryMove(curPiece, curX, curY)) { //새로 생성된 후 초기 위치가 유효한지 나타냄
 			curPiece.setShape(Tetrominoes.NoShape);
 			timer.stop();
+			if(timemode){timeLimitTimer.stop();}
 			isStarted = false;
 			statusbar.setText("game over");
 			endMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav",true);
@@ -279,7 +331,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 				enteredName = nameField.getText();
 				saveScore2(enteredName);
-
+				frame.dispose();
+				tetris.showLobby();
 			}
 		});
 
@@ -290,11 +343,15 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 	public void saveScore2(String enteredName)
 	{
-
 		try
 		{
-
 			File file=new File(scoreRecord);
+			if(timemode)
+			{
+				file= new File(timeModeScoreRecord);
+			}
+
+
 			BufferedReader reader=new BufferedReader(new FileReader(file));
 			String[] names=new String[3];
 			int[] scores =new int[3];
@@ -318,12 +375,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					names[i]=enteredName;
 					updated=true;
 					break;
-
 				}
 			}
 			if(updated)
 			{
-
 
 				BufferedWriter writer=new BufferedWriter(new FileWriter(file,false));
 				for(int i=0;i<3;i++)
