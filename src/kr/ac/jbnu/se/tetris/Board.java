@@ -26,7 +26,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	public boolean timemode;
 	private JLabel elapsedTimeLabel; // 추가: 경과 시간을 표시하는 레이블
 	private int elapsedTime; // 추가: 경과 시간을 저장하는 변수
-	private int TIME_LIMIT_IN_SECONDS = 10; // 추가: 시간 제한을 정의
+	private int TIME_LIMIT_IN_SECONDS = 7; // 추가: 시간 제한을 정의
 
 	Timer timer;
 	boolean isFallingFinished = false;
@@ -76,6 +76,15 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
+
+		//test
+		JPanel panel2=new JPanel();
+		panel2.setPreferredSize(new Dimension(200,300));
+		JLabel label2=new JLabel("gkgkgkgk");
+		panel2.add(label2);
+		add(panel2);
+
+
 		clearBoard(); //보드 초기화
 		if(timemode) {
 			timeLimitTimer = new Timer(1000, new ActionListener() {
@@ -250,27 +259,31 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		level=numLinesRemoved/3;
 		if(timemode) {
 			if (level >= 5) {
-				TIME_LIMIT_IN_SECONDS = 4;
+				TIME_LIMIT_IN_SECONDS = 3;
 			} else if (level == 4) {
-				TIME_LIMIT_IN_SECONDS = 5;
+				TIME_LIMIT_IN_SECONDS = 4;
 			} else if (level == 3) {
-				TIME_LIMIT_IN_SECONDS = 6;
+				TIME_LIMIT_IN_SECONDS = 5;
 			} else if (level == 2) {
-				TIME_LIMIT_IN_SECONDS = 8;
+				TIME_LIMIT_IN_SECONDS = 6;
 			}
 		}
 
 
 		if (level >= 5) {
 			levelbar.setText("LEVEL 5");
-			timer.setDelay(300);
+			if(!timemode) {
+				timer.setDelay(300);
+			}
 		} else if (level >= 4) {
 			levelbar.setText("LEVEL 4");
 		} else if (level >= 3) {
 			levelbar.setText("LEVEL 3");
 		} else if (level >= 2) {
 			levelbar.setText("LEVEL 2");
-			timer.setDelay(400);
+			if(!timemode) {
+				timer.setDelay(400);
+			}
 		}
 
 
@@ -459,7 +472,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 
 
-		if(level>=4)
+		if(!timemode&&level>=4)
 		{
 			g.setColor(new Color(238,238,238));
 		}
@@ -470,7 +483,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		g.fillRect(x + 1, y + 1, squareWidth() - 2, squareHeight() - 2);
 		//사각형을 그림 , x,y는 왼쪽 상단 모서리의 좌표를 나타냄
 
-		if(level<=3)
+		if(level<=3||timemode)
 		{
 			g.setColor(color.brighter()); //가장자리 강조
 			g.drawLine(x, y + squareHeight() - 1, x, y);
@@ -597,7 +610,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				tryMove(curPiece, curX + 1, curY);
 
 			} else if (keycode == TetrisKeySetting.keyMappings.get("RotateLeft")) {
-				if(rotateCount>3&&level>=3) {
+				if(rotateCount>3&&level>=3&&!timemode) {
 
 				}
 				else
@@ -607,7 +620,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				}
 
 			} else if (keycode == TetrisKeySetting.keyMappings.get("RotateRight")) {
-				if(rotateCount>3&&level>=3) {
+				if(rotateCount>3&&level>=3&&!timemode) {
 
 				}
 				else
