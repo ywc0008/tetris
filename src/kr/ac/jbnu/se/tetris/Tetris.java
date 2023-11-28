@@ -1,8 +1,5 @@
 package kr.ac.jbnu.se.tetris;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -14,9 +11,14 @@ import java.io.Serializable;
 
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.Border;
+import javax.swing.BorderFactory;
 
 
 public class Tetris extends JFrame implements Serializable {
+    private final int widthSize=800;
+    private final int heightSize=800;
 
     private static final long serialVersionUID = 1L;
     JLabel statusbar; // 텍스트 정보를 표시
@@ -33,19 +35,71 @@ public class Tetris extends JFrame implements Serializable {
     String timeModeScoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\scoretimemode.txt";
     String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
     String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
-
+    String mainbackground=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\main.png";
+    ImageIcon icon;
     public Tetris() {
-        lobbyPanel = new JPanel(new GridLayout(4,1));
+        icon = new ImageIcon(mainbackground);
 
-        Dimension buttonSize=new Dimension(200,50);
+        //배경 Panel 생성후 컨텐츠페인으로 지정
+        lobbyPanel = new JPanel() {
+            public void paintComponent(Graphics g) {
+                // Approach 1: Dispaly image at at full size
+                g.drawImage(icon.getImage(), 0, 0, null);
+                // Approach 2: Scale image to size of component
+                // Dimension d = getSize();
+                // g.drawImage(icon.getImage(), 0, 0, d.width, d.height, null);
+                // Approach 3: Fix the image position in the scroll pane
+                // Point p = scrollPane.getViewport().getViewPosition();
+                // g.drawImage(icon.getImage(), p.x, p.y, null);
+                setOpaque(false); //그림을 표시하게 설정,투명하게 조절
+                super.paintComponent(g);
+            }
+        };
+
+
+
+
         startButton = new JButton("게임 시작");
         settingButton=new JButton("환경 설정");
         loadButton=new JButton("불러오기");
         rankButton=new JButton("랭킹");
-        startButton.setPreferredSize(buttonSize);
-        settingButton.setPreferredSize(buttonSize);
-        loadButton.setPreferredSize(buttonSize);
-        rankButton.setPreferredSize(buttonSize);
+        Font buttonFont = new Font("Dialog", Font.BOLD, 20);
+        startButton.setFont(buttonFont);
+        settingButton.setFont(buttonFont);
+        loadButton.setFont(buttonFont);
+        rankButton.setFont(buttonFont);
+
+// 텍스트 색상 설정
+        Color textColor = Color.WHITE;
+        startButton.setForeground(textColor);
+        settingButton.setForeground(textColor);
+        loadButton.setForeground(textColor);
+        rankButton.setForeground(textColor);
+
+
+
+// 배경 색상 설정
+        Color backgroundColor = new Color(0, 0, 8);  // 예시 색상 (파란색)
+        startButton.setBackground(backgroundColor);
+        settingButton.setBackground(backgroundColor);
+        loadButton.setBackground(backgroundColor);
+        rankButton.setBackground(backgroundColor);
+
+// 테두리 없애기
+
+        startButton.setBounds(100,450,200,100);
+        settingButton.setBounds(100,600,200,100);
+        loadButton.setBounds(500,450,200,100);
+        rankButton.setBounds(500,600,200,100);
+        lobbyPanel.add(startButton);
+        lobbyPanel.add(settingButton);
+        lobbyPanel.add(loadButton);
+        lobbyPanel.add(rankButton);
+        lobbyPanel.setLayout(null);
+        add(lobbyPanel);
+
+
+
 
 
 
@@ -84,26 +138,22 @@ public class Tetris extends JFrame implements Serializable {
             }
         });
 
-        settingButton = new JButton("환경 설정");
         settingButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 openSetting();
             }
         });
 
-        lobbyPanel.add(startButton,BorderLayout.CENTER);
-        lobbyPanel.add(settingButton,BorderLayout.CENTER);
-        lobbyPanel.add(loadButton,BorderLayout.CENTER);
-        lobbyPanel.add(rankButton,BorderLayout.CENTER);
-        add(lobbyPanel, BorderLayout.CENTER);
+
 
         //bgm
 
         backgroundMusic=new Audio(lobbywavpath,true);
         backgroundMusic.bgmStart();
 
-        setSize(400, 800);// 테트리스 창의 크기 설정
+        setSize(widthSize, heightSize);// 테트리스 창의 크기 설정
         setTitle("Tetris"); // 창의 제목을 Tetris로 설정
+
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 창을 닫으면 프로그램 종료
         keySetting = new TetrisKeySetting();
     }
@@ -180,6 +230,7 @@ public class Tetris extends JFrame implements Serializable {
         frame.add(label1,BorderLayout.WEST);
         frame.add(label2,BorderLayout.EAST);
         frame.add(button,BorderLayout.SOUTH);
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 

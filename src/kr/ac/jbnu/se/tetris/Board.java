@@ -49,7 +49,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	Shape nextPiece; //다음 블럭을 나타냄
 
 	private int rotateCount = 0;
-
+	JLabel sideLabel1;
+	JLabel sideLabel2;
+	JLabel sideLabel3;
+	JLabel sideLabel4;
 	int nextX=10;
 	int nextY=10;
 
@@ -72,17 +75,54 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
 		timer.start(); //타이머 시작
 		levelbar=new JLabel("LEVEL 1");
-		add(levelbar, BorderLayout.EAST);
+
 		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
 		addKeyListener(new TAdapter());//키를 통해 블록제어
+		//시작 : 위치와 크기 임의로 조정하는거부터 시작하기
+		FlowLayout layout=new FlowLayout(FlowLayout.CENTER,30,40);
+		JPanel sidePanel = new JPanel();
+		sidePanel.setLayout(layout);
+		Dimension sideLabelSize=new Dimension(400,200);
+		Font labelFont = new Font("Dialog", Font.PLAIN, 50);
+		Font labelFont2 = new Font("Dialog", Font.PLAIN, 30);
+		sideLabel1= new JLabel();
+		if(timemode)
+		{
+			sideLabel1.setText("Time mode");
+		}
+		else
+		{
+			sideLabel1.setText("Normal mode");
+		}
+		sideLabel2= new JLabel("Delay : 400");
+		sideLabel3= new JLabel("남은 회전 횟수 : ∞");
+		sideLabel4= new JLabel("응원 자리");
+		levelbar.setSize(sideLabelSize);
+		sideLabel1.setSize(sideLabelSize);
+		sideLabel2.setSize(sideLabelSize);
+		sideLabel3.setSize(sideLabelSize);
+		sideLabel4.setSize(sideLabelSize);
+		levelbar.setFont(labelFont);
+		sideLabel1.setFont(labelFont);
+		sideLabel2.setFont(labelFont);
+		sideLabel3.setFont(labelFont2);
+		sideLabel4.setFont(labelFont);
 
-		//test
-		JPanel panel2=new JPanel();
-		panel2.setPreferredSize(new Dimension(200,300));
-		JLabel label2=new JLabel("gkgkgkgk");
-		panel2.add(label2);
-		add(panel2);
+		sidePanel.add(sideLabel1);
+		sidePanel.add(levelbar);
+		sidePanel.add(sideLabel2);
+		sidePanel.add(sideLabel3);
+		sidePanel.add(sideLabel4);
+		setLayout(null);
+		sidePanel.setSize(400,800);
+		sidePanel.setLocation(400,0);
+		add(sidePanel);
+
+
+
+
+
 
 
 		clearBoard(); //보드 초기화
@@ -120,7 +160,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	int squareWidth() { //화면 가로칸 계산해서 Tetris 게임 보드의 너비에 맞는 가로 길이 계산
-		return (int) getSize().getWidth() / BoardWidth;
+		return (int) getSize().getWidth() / BoardWidth/2;
 	}
 
 	int squareHeight() { //화면 세로칸 계산해서 Tetris 게임 보드의 너비에 맞는 세로 길이 계산
@@ -197,6 +237,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 						curPiece.getShape()); //블록의 색상과 모양을 그리는 역할
 			}
 		}
+		int panelWidth = getSize().width;
+		int dividingLineX = panelWidth / 2;
+		g.setColor(Color.BLACK);
+		g.drawLine(dividingLineX, 0, dividingLineX, getSize().height);
 	}
 	private Timer softDropDelayTimer;
 
@@ -274,6 +318,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			levelbar.setText("LEVEL 5");
 			if(!timemode) {
 				timer.setDelay(300);
+				sideLabel2.setText("Delay : 300");
 			}
 		} else if (level >= 4) {
 			levelbar.setText("LEVEL 4");
@@ -617,6 +662,9 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				{
 					tryMove(curPiece.rotateLeft(), curX, curY);
 					rotateCount++;
+					if(level>=3) {
+						sideLabel3.setText("남은 회전 횟수 : " + (4 - rotateCount));
+					}
 				}
 
 			} else if (keycode == TetrisKeySetting.keyMappings.get("RotateRight")) {
@@ -627,6 +675,9 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				{
 					tryMove(curPiece.rotateRight(), curX, curY);
 					rotateCount++;
+					if(level>=3) {
+						sideLabel3.setText("남은 회전 횟수 : " + (4 - rotateCount));
+					}
 				}
 
 			} else if (keycode == TetrisKeySetting.keyMappings.get("MoveDown")) {
