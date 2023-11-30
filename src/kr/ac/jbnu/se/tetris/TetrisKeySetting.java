@@ -25,7 +25,7 @@ public class TetrisKeySetting extends JFrame {
 
     public TetrisKeySetting() {
         setTitle("Tetris Key Setting");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(300, 600);
 
         keyMappings = new HashMap<>();
@@ -145,7 +145,7 @@ public class TetrisKeySetting extends JFrame {
 
                 JFrame frame = new JFrame("Key Change");
                 frame.setSize(300, 200);
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
                 frame.addKeyListener(new KeyAdapter() {
                     @Override
@@ -153,7 +153,7 @@ public class TetrisKeySetting extends JFrame {
                         int changeKeyCode = e.getKeyCode();
                         System.out.println(KeyEvent.getKeyText(changeKeyCode) + "키가 눌렸습니다. 키 코드: " + changeKeyCode);
                         setKeyButtonText(button, changeKeyCode, keyName);
-
+                        frame.dispose();
                     }
 
                     @Override
@@ -170,7 +170,7 @@ public class TetrisKeySetting extends JFrame {
 
                 frame.setFocusable(true);
                 frame.requestFocusInWindow();
-
+                frame.setLocationRelativeTo(null);
                 frame.setVisible(true);
             }
         });

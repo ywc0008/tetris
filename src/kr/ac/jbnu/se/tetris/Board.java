@@ -44,15 +44,16 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	String timeModeScoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\scoretimemode.txt";
 	String savepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
 	String breakmusicpath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\break.wav";
-
+	String gamebackgroundImagepath=System.getProperty("user.dir")+"\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\backgroundimg.png";
+	String sidePanelBackgroundImagePath = System.getProperty("user.dir") + "\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\sidepanelimg.png";
 	int level;
+	private Image backgroundImage;
 	Shape nextPiece; //다음 블럭을 나타냄
 
 	private int rotateCount = 0;
 	JLabel sideLabel1;
 	JLabel sideLabel2;
 	JLabel sideLabel3;
-	JLabel sideLabel4;
 	int nextX=10;
 	int nextY=10;
 
@@ -67,14 +68,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 		//타임어택 모드
 		timemode=parent.getTimeMode();
-		if(timemode) {
-			elapsedTimeLabel = new JLabel("Elapsed Time: 0 seconds");
-			add(elapsedTimeLabel, BorderLayout.SOUTH);
-		}
+
 
 		timer = new Timer(400, this); //테트리스가 떨어지는 시간
 		timer.start(); //타이머 시작
-		levelbar=new JLabel("LEVEL 1");
+
 
 		statusbar = parent.getStatusBar(); //부모클래스에서 상태창 가져옴
 		board = new Tetrominoes[BoardWidth * BoardHeight]; //보드 상태 저장
@@ -83,42 +81,75 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		FlowLayout layout=new FlowLayout(FlowLayout.CENTER,30,40);
 		JPanel sidePanel = new JPanel();
 		sidePanel.setLayout(layout);
+
+		ImageIcon sidePanelBackgroundImageIcon = new ImageIcon(sidePanelBackgroundImagePath);
+		Image sidePanelBackgroundImage = sidePanelBackgroundImageIcon.getImage();
+
+// sidePanel에 배경 이미지 설정
+		sidePanel = new JPanel() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				g.drawImage(sidePanelBackgroundImage, 0, 0, getWidth(), getHeight(), this);
+			}
+		};
 		Dimension sideLabelSize=new Dimension(400,200);
 		Font labelFont = new Font("Dialog", Font.PLAIN, 50);
-		Font labelFont2 = new Font("Dialog", Font.PLAIN, 30);
+		Font labelFont2 = new Font("Dialog", Font.PLAIN, 40);
 		sideLabel1= new JLabel();
+
+		levelbar=new JLabel("LEVEL 1");
+		sideLabel2= new JLabel();
+		sideLabel3= new JLabel();
 		if(timemode)
 		{
 			sideLabel1.setText("Time mode");
+			sideLabel2.setText("Time remaining");
+			sideLabel3.setText(TIME_LIMIT_IN_SECONDS+ " seconds");
 		}
 		else
 		{
 			sideLabel1.setText("Normal mode");
+			sideLabel2.setText("Delay : 400");
+			sideLabel3.setText("남은 회전횟수:∞");
 		}
-		sideLabel2= new JLabel("Delay : 400");
-		sideLabel3= new JLabel("남은 회전 횟수 : ∞");
-		sideLabel4= new JLabel("응원 자리");
 		levelbar.setSize(sideLabelSize);
 		sideLabel1.setSize(sideLabelSize);
 		sideLabel2.setSize(sideLabelSize);
 		sideLabel3.setSize(sideLabelSize);
-		sideLabel4.setSize(sideLabelSize);
+
+		sideLabel1.setBounds(20,100,340,50);
+		levelbar.setBounds(20,200,340,50);
+		sideLabel2.setBounds(20,300,340,50);
+		sideLabel3.setBounds(20,400,340,50);
+
+		levelbar.setForeground(Color.WHITE);
+		sideLabel1.setForeground(Color.WHITE);
+		sideLabel2.setForeground(Color.WHITE);
+		sideLabel3.setForeground(Color.WHITE);
+
 		levelbar.setFont(labelFont);
 		sideLabel1.setFont(labelFont);
-		sideLabel2.setFont(labelFont);
+		sideLabel2.setFont(labelFont2);
 		sideLabel3.setFont(labelFont2);
-		sideLabel4.setFont(labelFont);
+
+
+		sideLabel1.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		levelbar.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		sideLabel2.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+		sideLabel3.setBorder(BorderFactory.createLineBorder(Color.WHITE));
 
 		sidePanel.add(sideLabel1);
 		sidePanel.add(levelbar);
 		sidePanel.add(sideLabel2);
 		sidePanel.add(sideLabel3);
-		sidePanel.add(sideLabel4);
-		setLayout(null);
+
+		sidePanel.setLayout(null);
 		sidePanel.setSize(400,800);
 		sidePanel.setLocation(400,0);
 		add(sidePanel);
 
+		setLayout(null);
 
 
 
@@ -131,7 +162,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					elapsedTime++;
-					elapsedTimeLabel.setText("Elapsed Time: " + elapsedTime + " seconds");
+					sideLabel3.setText(TIME_LIMIT_IN_SECONDS-elapsedTime + " seconds");
 					if (elapsedTime >= TIME_LIMIT_IN_SECONDS) {
 						// 시간 제한을 초과하면 게임 종료 처리
 						timer.stop();
@@ -147,6 +178,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			});
 			timeLimitTimer.start();
 		}
+		backgroundImage=new ImageIcon(gamebackgroundImagepath).getImage();
 	}
 
 
@@ -220,7 +252,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		super.paint(g); //부모 클래스의 paint를 호출하여 화면 지움(새로운 프레임 그릴 준비)
 		Dimension size = getSize(); ////게임 화면의 크기를 가져옴
 		int boardTop = (int) size.getHeight() - BoardHeight * squareHeight();//화면높이-보드 높이*블록 크기
-
+		int panelWidth = getSize().width;
+		int panelHeight = getSize().height;
+		int dividingLineX = panelWidth / 2;
+		g.drawImage(backgroundImage, 0, 0, dividingLineX, panelHeight, this);
 		for (int i = 0; i < BoardHeight; ++i) { //게임 보드를 순회하면서 각 위치에 블록이 있는지 확인
 			for (int j = 0; j < BoardWidth; ++j) {
 				Tetrominoes shape = shapeAt(j, BoardHeight - i - 1);
@@ -237,10 +272,8 @@ public class Board extends JPanel implements ActionListener,Serializable {
 						curPiece.getShape()); //블록의 색상과 모양을 그리는 역할
 			}
 		}
-		int panelWidth = getSize().width;
-		int dividingLineX = panelWidth / 2;
 		g.setColor(Color.BLACK);
-		g.drawLine(dividingLineX, 0, dividingLineX, getSize().height);
+		g.drawLine(dividingLineX, 0, getSize().width / 2, getSize().height);
 	}
 	private Timer softDropDelayTimer;
 
@@ -519,7 +552,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 		if(!timemode&&level>=4)
 		{
-			g.setColor(new Color(238,238,238));
+			g.setColor(new Color(238,238,238,0));
 		}
 		else
 			g.setColor(color);
@@ -556,12 +589,29 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		level=numLinesRemoved/3;
+		if (level >= 5) {
+			levelbar.setText("LEVEL 5");
+			if(!timemode) {
+				timer.setDelay(300);
+				sideLabel2.setText("Delay : 300");
+			}
+		} else if (level >= 4) {
+			levelbar.setText("LEVEL 4");
+		} else if (level >= 3) {
+			levelbar.setText("LEVEL 3");
+		} else if (level >= 2) {
+			levelbar.setText("LEVEL 2");
+			if(!timemode) {
+				timer.setDelay(400);
+			}
+		}
 
 	}
 	//esc 메뉴
 	private void showPauseMenu() {
 		JFrame frame = new JFrame("Pause Menu");
-		frame.setSize(200, 150);
+		frame.setSize(300, 300);
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setLocationRelativeTo(this);
 		frame.setResizable(false);
@@ -569,11 +619,26 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		JPanel pausePanel = new JPanel(new GridLayout(2, 1));
 		pausePanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		frame.add(pausePanel);
-
+		Font buttonFont = new Font("Dialog", Font.BOLD, 15);
 		JButton resumeButton = new JButton("계속하기");
 		JButton saveButton = new JButton("저장 및 종료");
 		JButton quitButton = new JButton("끝내기");
 		JButton lobbyButton = new JButton("로비");
+
+		resumeButton.setFont(buttonFont);
+		saveButton.setFont(buttonFont);
+		quitButton.setFont(buttonFont);
+		lobbyButton.setFont(buttonFont);
+
+		resumeButton.setForeground(Color.WHITE);
+		saveButton.setForeground(Color.WHITE);
+		quitButton.setForeground(Color.WHITE);
+		lobbyButton.setForeground(Color.WHITE);
+		Color color=new Color(20,25,80);
+		resumeButton.setBackground(color);
+		saveButton.setBackground(color);
+		quitButton.setBackground(color);
+		lobbyButton.setBackground(color);
 
 		pausePanel.add(resumeButton);
 		pausePanel.add(saveButton);
@@ -663,7 +728,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					tryMove(curPiece.rotateLeft(), curX, curY);
 					rotateCount++;
 					if(level>=3) {
-						sideLabel3.setText("남은 회전 횟수 : " + (4 - rotateCount));
+						sideLabel3.setText("남은 회전횟수:" + (4 - rotateCount));
 					}
 				}
 
@@ -676,7 +741,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					tryMove(curPiece.rotateRight(), curX, curY);
 					rotateCount++;
 					if(level>=3) {
-						sideLabel3.setText("남은 회전 횟수 : " + (4 - rotateCount));
+						sideLabel3.setText("남은 회전횟수:" + (4 - rotateCount));
 					}
 				}
 

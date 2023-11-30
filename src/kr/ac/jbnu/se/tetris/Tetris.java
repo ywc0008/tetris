@@ -4,16 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.Border;
-import javax.swing.BorderFactory;
 
 
 public class Tetris extends JFrame implements Serializable {
@@ -36,6 +32,7 @@ public class Tetris extends JFrame implements Serializable {
     String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
     String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
     String mainbackground=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\main.png";
+    String rankbackgroundpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\rankbackground.png";
     ImageIcon icon;
     public Tetris() {
         icon = new ImageIcon(mainbackground);
@@ -45,12 +42,6 @@ public class Tetris extends JFrame implements Serializable {
             public void paintComponent(Graphics g) {
                 // Approach 1: Dispaly image at at full size
                 g.drawImage(icon.getImage(), 0, 0, null);
-                // Approach 2: Scale image to size of component
-                // Dimension d = getSize();
-                // g.drawImage(icon.getImage(), 0, 0, d.width, d.height, null);
-                // Approach 3: Fix the image position in the scroll pane
-                // Point p = scrollPane.getViewport().getViewPosition();
-                // g.drawImage(icon.getImage(), p.x, p.y, null);
                 setOpaque(false); //그림을 표시하게 설정,투명하게 조절
                 super.paintComponent(g);
             }
@@ -217,19 +208,34 @@ public class Tetris extends JFrame implements Serializable {
         JLabel label1=new JLabel();
         JLabel label2=new JLabel();
         JButton button=new JButton("확인");
-
-        frame.setSize(300,300);
-        frame.setLayout(new BorderLayout()); // 레이아웃 관리자 설정
-        label1.setText("<html>"+"NORMAL RANK"+"<br>"+record1[0]+"<br>"+record1[1]+"<br>"+record1[2]+"</html>");
-        label2.setText("<html>"+"TIME ATTACK RANK"+"<br>"+record2[0]+"<br>"+record2[1]+"<br>"+record2[2]+"</html>");
+        ImageIcon imageIcon = new ImageIcon(rankbackgroundpath); // 이미지 파일 경로로 변경
+        // 이미지를 표시할 JLabel 생성
+        JLabel imageLabel = new JLabel(imageIcon);
+        frame.setSize(500,500);
+        frame.setLayout(null); // 레이아웃 관리자 설정
+        Font labelFont = new Font("Dialog", Font.BOLD, 20);
+        label1.setFont(labelFont);
+        label2.setFont(labelFont);
+        // 폰트의 색을 흰색으로 설정
+        label1.setForeground(Color.WHITE);
+        label2.setForeground(Color.WHITE);
+        label1.setText("<html>"+"NORMAL RANK"+"<br>"+"<br>"+record1[0]+"<br>"+record1[1]+"<br>"+record1[2]+"</html>");
+        label2.setText("<html>"+"TIME ATTACK RANK"+"<br>"+"<br>"+record2[0]+"<br>"+record2[1]+"<br>"+record2[2]+"</html>");
         button.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // 팝업 창 닫기
             }
         });
-        frame.add(label1,BorderLayout.WEST);
-        frame.add(label2,BorderLayout.EAST);
-        frame.add(button,BorderLayout.SOUTH);
+        imageLabel.setBounds(0, 0, 500, 500);
+        label1.setBounds(50, 50, 200, 200);
+        label2.setBounds(270, 50, 200, 200);
+        button.setBounds(200, 400, 100, 50);
+
+
+        frame.add(label1);
+        frame.add(label2);
+        frame.add(imageLabel);
+        frame.add(button);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
