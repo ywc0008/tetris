@@ -5,12 +5,13 @@ import java.io.IOException;
 
 
 public class Audio {
+
 	private Clip clip;
 	private File audioFile;
 	private AudioInputStream audioInputStream;
 	private boolean isLoop;
 	
-	public Audio(String pathName, boolean isLoop) {
+	public Audio(String pathName) {
 		try {
 			clip=AudioSystem.getClip();
 			audioFile= new File(pathName);
@@ -26,7 +27,7 @@ public class Audio {
 	public void bgmStart() {
 		clip.setFramePosition(0);
 		clip.start();
-		if(isLoop) clip.loop(clip.LOOP_CONTINUOUSLY);
+		if(isLoop) clip.loop(Clip.LOOP_CONTINUOUSLY);
 	}
 	public void bgmStop() {
 		clip.stop();

@@ -22,9 +22,9 @@ java:S1104"TMake timemode a static final constant or non-public and provide ac
 6
 java:S1700)"Rename field "board"(¦§ùßûÿÿÿÿ8Ÿž¼ÞÁ1
 o
-java:S2095Ú"LUse try-with-resources or close this "BufferedWriter" in a "finally" clause.(Ù†ñÏüÿÿÿÿ8ÜŸ¼ÞÁ1
-o
 java:S2095¾"LUse try-with-resources or close this "BufferedReader" in a "finally" clause.(õéµ¨ûÿÿÿÿ8ÜŸ¼ÞÁ1
+o
+java:S2095Ú"LUse try-with-resources or close this "BufferedWriter" in a "finally" clause.(Ù†ñÏüÿÿÿÿ8ÜŸ¼ÞÁ1
 p	java:S116"URename this field "BoardWidth" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(À®©R8ÜŸ¼ÞÁ1
 r	java:S116"VRename this field "BoardHeight" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(«¬áª8ÜŸ¼ÞÁ1
 |	java:S116"`Rename this field "TIME_LIMIT_IN_SECONDS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒó»Õ8ÜŸ¼ÞÁ1

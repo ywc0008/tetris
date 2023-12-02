@@ -1,6 +1,7 @@
 package kr.ac.jbnu.se.tetris;
 import java.io.Serializable;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Shape implements Serializable {
@@ -10,8 +11,8 @@ public class Shape implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Tetrominoes pieceShape; //변수 선언
-	private int coords[][]; //블럭의 좌표를 지정
-	private int[][][] coordsTable; //모든 블록의 가능한 회전 상태를 저장하는 3차원 배열
+	private int [][]coords; //블럭의 좌표를 지정
+
 
 	public Shape() {
 		coords = new int[4][2];
@@ -20,7 +21,7 @@ public class Shape implements Serializable {
 
 	public void setShape(Tetrominoes shape) {
 
-		coordsTable = new int[][][] 
+		int [][][] coordsTable =
 				{ { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } },
 				{ { 0, -1 }, { 0, 0 }, { -1, 0 }, { -1, 1 } }, 
 				{ { 0, -1 }, { 0, 0 }, { 1, 0 }, { 1, 1 } },
@@ -30,10 +31,9 @@ public class Shape implements Serializable {
 				{ { -1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } },
 				{ { 1, -1 }, { 0, -1 }, { 0, 0 }, { 0, 1 } } };
 
+		int[][] shapeCoords = Arrays.copyOf(coordsTable[shape.ordinal()], coordsTable[shape.ordinal()].length);
 		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 2; ++j) {
-				coords[i][j] = coordsTable[shape.ordinal()][i][j];
-			}
+			System.arraycopy(shapeCoords[i], 0, coords[i], 0, 2);
 		}
 		pieceShape = shape;
 

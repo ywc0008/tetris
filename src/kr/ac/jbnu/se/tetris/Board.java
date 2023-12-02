@@ -371,7 +371,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			if(timemode){timeLimitTimer.stop();}
 			isStarted = false;
 			statusbar.setText("game over");
-			endMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav",true);
+			endMusic=new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav");
 			endMusic.bgmStart();
 			saveScore(numLinesRemoved);
 		}
@@ -525,7 +525,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 					for (int j = 0; j < BoardWidth; ++j)
 						board[(k * BoardWidth) + j] = shapeAt(j, k + 1); //각 줄을 한칸씩 아래로 이동
 				}
-				breakMusic=new Audio(breakmusicpath,true);
+				breakMusic=new Audio(breakmusicpath);
 				breakMusic.bgmStart();
 			}
 		}
