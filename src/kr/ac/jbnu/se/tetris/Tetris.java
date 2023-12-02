@@ -3,20 +3,17 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.Serializable;
 
 
 import javax.swing.*;
 
 
-public class Tetris extends JFrame implements Serializable {
-    private final int widthSize=800;
-    private final int heightSize=800;
+public class Tetris extends JFrame {
+    private static final int WIDTH_SIZE=800;
+    private static final int HEIGHT_SIZE=800;
 
-    private static final long serialVersionUID = 1L;
     JLabel statusbar; // 텍스트 정보를 표시
     JPanel lobbyPanel; // 로비 패널
     JButton startButton; // 게임 시작 버튼
@@ -24,21 +21,23 @@ public class Tetris extends JFrame implements Serializable {
     JButton loadButton;
     JButton rankButton;
     //bgm
-    private Audio backgroundMusic;
+    private transient Audio backgroundMusic;
     private TetrisKeySetting keySetting;
-    String lobbywavpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
-    String scoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
-    String timeModeScoreRecord=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\scoretimemode.txt";
-    String pianowavpath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
-    String savepath=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
-    String mainbackground=System.getProperty("user.dir")+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\main.png";
-    String rankbackgroundpath=System.getProperty("user.dir")+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\rankbackground.png";
+    private static final String ACTION_1 = "user.dir";  // Compliant
+    String lobbywavpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
+    String scoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
+    String timeModeScoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\scoretimemode.txt";
+    String pianowavpath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
+    String savepath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
+    String mainbackground=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\main.png";
+    String rankbackgroundpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\rankbackground.png";
     ImageIcon icon;
     public Tetris() {
         icon = new ImageIcon(mainbackground);
 
         //배경 Panel 생성후 컨텐츠페인으로 지정
         lobbyPanel = new JPanel() {
+            @Override
             public void paintComponent(Graphics g) {
                 // Approach 1: Dispaly image at at full size
                 g.drawImage(icon.getImage(), 0, 0, null);
@@ -116,33 +115,20 @@ public class Tetris extends JFrame implements Serializable {
 
 
 
-        loadButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                loadGameStart();
-            }
-        });
+        loadButton.addActionListener(e -> loadGameStart());
 
+        settingButton.addActionListener(e -> openSetting());
 
-        rankButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                loadRank();
-            }
-        });
-
-        settingButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                openSetting();
-            }
-        });
+        rankButton.addActionListener(e -> loadRank());
 
 
 
         //bgm
 
-        backgroundMusic=new Audio(lobbywavpath,true);
+        backgroundMusic=new Audio(lobbywavpath);
         backgroundMusic.bgmStart();
 
-        setSize(widthSize, heightSize);// 테트리스 창의 크기 설정
+        setSize(WIDTH_SIZE, HEIGHT_SIZE);// 테트리스 창의 크기 설정
         setTitle("Tetris"); // 창의 제목을 Tetris로 설정
 
         setDefaultCloseOperation(EXIT_ON_CLOSE); // 창을 닫으면 프로그램 종료
@@ -151,7 +137,7 @@ public class Tetris extends JFrame implements Serializable {
 
     public void showLobby() {
         backgroundMusic.bgmStop(); // 현재 재생 중인 BGM 중지
-        backgroundMusic = new Audio(lobbywavpath, true); // 로비 BGM 재생
+        backgroundMusic = new Audio(lobbywavpath); // 로비 BGM 재생
         backgroundMusic.bgmStart();
         getContentPane().removeAll(); // 현재 모든 구성 요소를 제거
         getContentPane().add(lobbyPanel); // 로비 패널 추가
@@ -165,45 +151,34 @@ public class Tetris extends JFrame implements Serializable {
         return statusbar;
     }
 
-    public boolean timemode=false;
+    private boolean timemode=false;
 
     public boolean getTimeMode()
     {
         return timemode;
     }
 
-    static String[] record1=new String[3];
-    static String[] record2=new String[3];
-    public void loadRank()
-    {
-        try
-        {
-            File file=new File(scoreRecord);
-            BufferedReader reader=new BufferedReader(new FileReader(file));
-            for(int i=0;i<3;i++)
-            {
-                String line=reader.readLine();
-                record1[i]=line;
+    String[] record1=new String[3];
+    String[] record2=new String[3];
+    public void loadRank() {
+        try (BufferedReader reader = new BufferedReader(new FileReader(scoreRecord))) {
+            for (int i = 0; i < 3; i++) {
+                String line = reader.readLine();
+                record1[i] = line;
             }
-            reader.close();
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        try
-        {
-            File file=new File(timeModeScoreRecord);
-            BufferedReader reader=new BufferedReader(new FileReader(file));
-            for(int i=0;i<3;i++)
-            {
-                String line=reader.readLine();
-                record2[i]=line;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(timeModeScoreRecord))) {
+            for (int i = 0; i < 3; i++) {
+                String line = reader.readLine();
+                record2[i] = line;
             }
-            reader.close();
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+
         JFrame frame=new JFrame("Rank");
         JLabel label1=new JLabel();
         JLabel label2=new JLabel();
@@ -221,11 +196,9 @@ public class Tetris extends JFrame implements Serializable {
         label2.setForeground(Color.WHITE);
         label1.setText("<html>"+"NORMAL RANK"+"<br>"+"<br>"+record1[0]+"<br>"+record1[1]+"<br>"+record1[2]+"</html>");
         label2.setText("<html>"+"TIME ATTACK RANK"+"<br>"+"<br>"+record2[0]+"<br>"+record2[1]+"<br>"+record2[2]+"</html>");
-        button.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose(); // 팝업 창 닫기
-            }
-        });
+
+        button.addActionListener(e -> frame.dispose());
+
         imageLabel.setBounds(0, 0, 500, 500);
         label1.setBounds(50, 50, 200, 200);
         label2.setBounds(270, 50, 200, 200);
@@ -243,7 +216,7 @@ public class Tetris extends JFrame implements Serializable {
 
     private void startGame() {
         backgroundMusic.bgmStop();
-        backgroundMusic=new Audio(pianowavpath,true);
+        backgroundMusic=new Audio(pianowavpath);
         backgroundMusic.bgmStart();
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
@@ -260,7 +233,7 @@ public class Tetris extends JFrame implements Serializable {
 
     private void loadGameStart() {
         backgroundMusic.bgmStop();
-        backgroundMusic=new Audio(pianowavpath,true);
+        backgroundMusic=new Audio(pianowavpath);
         backgroundMusic.bgmStart();
         remove(lobbyPanel); // 로비 패널을 제거
         statusbar = new JLabel(" 0"); // 점수를 0으로 초기화
@@ -274,7 +247,6 @@ public class Tetris extends JFrame implements Serializable {
         board.loadGame(savepath);
     }
     private void openSetting() { //Setting 화면 출력
-//      TetrisKeySetting keySetting = new TetrisKeySetting();
         keySetting.setVisible(true);
     }
 

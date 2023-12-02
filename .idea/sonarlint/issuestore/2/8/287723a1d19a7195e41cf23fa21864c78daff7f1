@@ -1,60 +1,11 @@
 
-i
-java:S1192a"GDefine a constant instead of duplicating this literal "Dialog" 3 times.(Ûô“êøÿÿÿÿ8Ÿ¼ŞÁ1
-k
-java:S1192*"IDefine a constant instead of duplicating this literal "user.dir" 7 times.(®Ç°Áúÿÿÿÿ8Ÿ¼ŞÁ1
-K
-java:S1604¡"(Make this anonymous inner class a lambda(ü†Êßûÿÿÿÿ8Ÿ¼ŞÁ1
-F
-java:S1604£"(Make this anonymous inner class a lambda(§ˆ‚¨8Ÿ¼ŞÁ1
-K
-java:S1604£"(Make this anonymous inner class a lambda(Ï¹ÿîúÿÿÿÿ8Ÿ¼ŞÁ1
-F
-java:S1604ˆ"(Make this anonymous inner class a lambda(Áù¨Ò8Ÿ¼ŞÁ1
-F
-java:S1604"(Make this anonymous inner class a lambda(Ï¸8Ÿ¼ŞÁ1
-K
-java:S1604–"(Make this anonymous inner class a lambda(»óÑüÿÿÿÿ8Ÿ¼ŞÁ1
-K
-java:S1604›"(Make this anonymous inner class a lambda(Å¨…‰úÿÿÿÿ8Ÿ¼ŞÁ1
 v
-java:S1104"TMake timemode a static final constant or non-public and provide accessors if needed.(“ àûÿÿÿÿ8Ÿ¼ŞÁ1
-6
-java:S1700)"Rename field "board"(¦§ùßûÿÿÿÿ8Ÿ¼ŞÁ1
-o
-java:S2095¾"LUse try-with-resources or close this "BufferedReader" in a "finally" clause.(õéµ¨ûÿÿÿÿ8ÜŸ¼ŞÁ1
-o
-java:S2095Ú"LUse try-with-resources or close this "BufferedWriter" in a "finally" clause.(Ù†ñÏüÿÿÿÿ8ÜŸ¼ŞÁ1
-p	java:S116"URename this field "BoardWidth" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(À®©R8ÜŸ¼ŞÁ1
-r	java:S116"VRename this field "BoardHeight" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(«¬áª8ÜŸ¼ŞÁ1
-|	java:S116"`Rename this field "TIME_LIMIT_IN_SECONDS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ƒó»Õ8ÜŸ¼ŞÁ1
-=
-java:S1170"!Make this final field static too.(À®©R8ÜŸ¼ŞÁ1
->
-java:S1170"!Make this final field static too.(«¬áª8ÜŸ¼ŞÁ1
-S
-java:S19482"1Make "backgroundImage" transient or serializable.(®òŸ–üÿÿÿÿ8ÜŸ¼ŞÁ1
-X
-java:S1161û":Add the "@Override" annotation above this method signature(¶øÂÁ8íŸ¼ŞÁ1
-p
-java:S3776É"RRefactor this method to reduce its Cognitive Complexity from 17 to the 15 allowed.(â›À8íŸ¼ŞÁ1
-S
-java:S1172‘"6Remove this unused method parameter "numLinesRemoved".(¶é›*8íŸ¼ŞÁ1
-p
-java:S3776ü"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(ÎûÅ¿8íŸ¼ŞÁ1
-M
-java:S1197 "*Move the array designators [] to the type.(á“õÙüÿÿÿÿ8üŸ¼ŞÁ1
-r
-java:S3252ç"OUse static access with "javax.swing.WindowConstants" for "DO_NOTHING_ON_CLOSE".(éïÍÆşÿÿÿÿ8şŸ¼ŞÁ1
-o
-java:S3776­"RRefactor this method to reduce its Cognitive Complexity from 28 to the 15 allowed.(İ¼õA8şŸ¼ŞÁ1
-W
-java:S1161­":Add the "@Override" annotation above this method signature(İ¼õA8şŸ¼ŞÁ1
-F	java:S108Ó")Either remove or fill this block of code.(”ËßÂ8şŸ¼ŞÁ1
-F	java:S108à")Either remove or fill this block of code.(”ËßÂ8şŸ¼ŞÁ1
+java:S1104"TMake timemode a static final constant or non-public and provide accessors if needed.(ğóÕƒÿÿÿÿÿ8àŸ½ÛÂ1
+P
+java:S1444".Make this "public static timemode" field final(ğóÕƒÿÿÿÿÿ8àŸ½ÛÂ1
+G
+java:S3010M"%Remove this assignment of "timemode".(èºáÚüÿÿÿÿ8Ğ ½ÛÂ1
 D
-java:S3398™"!Move this method into "TAdapter".(êåÿÿÿÿÿÿ8şŸ¼ŞÁ1
+java:S3398"!Move this method into "TAdapter".(êåÿÿÿÿÿÿ8ï ½ÛÂ1
 D
-java:S3398ä"!Move this method into "TAdapter".(—ÛĞªùÿÿÿÿ8şŸ¼ŞÁ1
-Q
-java:S1068"4Remove this unused "elapsedTimeLabel" private field.(–“Éˆ8•ãÚŞÁ1
+java:S3398ï"!Move this method into "TAdapter".(—ÛĞªùÿÿÿÿ8ï ½ÛÂ1

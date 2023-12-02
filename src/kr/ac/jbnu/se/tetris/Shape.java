@@ -16,7 +16,7 @@ public class Shape implements Serializable {
 
 	public Shape() {
 		coords = new int[4][2];
-		setShape(Tetrominoes.NoShape);
+		setShape(Tetrominoes.NO_SHAPE);
 	}
 
 	public void setShape(Tetrominoes shape) {
@@ -58,10 +58,9 @@ public class Shape implements Serializable {
 	public Tetrominoes getShape() {
 		return pieceShape;
 	}
-
+	Random r = new Random();
 	public void setRandomShape() {
-		Random r = new Random();
-		int x = Math.abs(r.nextInt()) % 7 + 1; //1에서 7사이의 무작위 정수를 나타내기 위함
+		int x = Math.abs((r.nextInt()) % 7 + 1); //1에서 7사이의 무작위 정수를 나타내기 위함
 		Tetrominoes[] values = Tetrominoes.values();
 		setShape(values[x]);
 	}
@@ -83,7 +82,7 @@ public class Shape implements Serializable {
 	}
 
 	public Shape rotateLeft() {
-		if (pieceShape == Tetrominoes.SquareShape)
+		if (pieceShape == Tetrominoes.SQUARE_SHAPE)
 			return this;
 
 		Shape result = new Shape();
@@ -97,7 +96,7 @@ public class Shape implements Serializable {
 	}
 
 	public Shape rotateRight() { //블록 좌표 좌회전 또는 우회전
-		if (pieceShape == Tetrominoes.SquareShape)
+		if (pieceShape == Tetrominoes.SQUARE_SHAPE)
 			return this;
 
 		Shape result = new Shape();
