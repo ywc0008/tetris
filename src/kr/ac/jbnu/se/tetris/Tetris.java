@@ -15,23 +15,23 @@ public class Tetris extends JFrame {
     private static final int HEIGHT_SIZE=800;
 
     JLabel statusbar; // 텍스트 정보를 표시
-    JPanel lobbyPanel; // 로비 패널
-    JButton startButton; // 게임 시작 버튼
-    JButton settingButton;
-    JButton loadButton;
-    JButton rankButton;
+    final JPanel lobbyPanel; // 로비 패널
+    final JButton startButton; // 게임 시작 버튼
+    final JButton settingButton;
+    final JButton loadButton;
+    final JButton rankButton;
     //bgm
     private transient Audio backgroundMusic;
-    private TetrisKeySetting keySetting;
+    private final TetrisKeySetting keySetting;
     private static final String ACTION_1 = "user.dir";  // Compliant
-    String lobbywavpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\lobby.wav";
-    String scoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\score.txt";
-    String timeModeScoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\scoretimemode.txt";
-    String pianowavpath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\piano.wav";
-    String savepath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\load1.ser";
-    String mainbackground=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\main.png";
-    String rankbackgroundpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\rankbackground.png";
-    ImageIcon icon;
+    final String lobbywavpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\lobby.wav";
+    final String scoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\score.txt";
+    final String timeModeScoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\scoretimemode.txt";
+    final String pianowavpath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\piano.wav";
+    final String savepath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\load1.ser";
+    final String mainbackground=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\main.png";
+    final String rankbackgroundpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\rankbackground.png";
+    final ImageIcon icon;
     public Tetris() {
         icon = new ImageIcon(mainbackground);
 
@@ -127,11 +127,9 @@ public class Tetris extends JFrame {
                 button2.setBounds(170, 50, 110, 30);
                 button2.setBackground(Color.WHITE);
                 button2.setForeground(Color.BLACK);
-                button2.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        timemode = true;
-                        startGame();
-                    }
+                button2.addActionListener(e -> {
+                    timemode = true;
+                    startGame();
                 });
                 modeFrame.add(button2);
                 modeFrame.setVisible(true);
@@ -183,8 +181,8 @@ public class Tetris extends JFrame {
         return timemode;
     }
 
-    String[] record1=new String[3];
-    String[] record2=new String[3];
+    final String[] record1=new String[3];
+    final String[] record2=new String[3];
     public void loadRank() {
         try (BufferedReader reader = new BufferedReader(new FileReader(scoreRecord))) {
             for (int i = 0; i < 3; i++) {

@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.io.*;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 
@@ -21,55 +22,54 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	private int elapsedTime; // 추가: 경과 시간을 저장하는 변수
 	private int timeLimitInSeconds = 7; // 추가: 시간 제한을 정의
 
-	Timer timer;
+	final Timer timer;
 	boolean isFallingFinished = false;
 	boolean isStarted = false;
 	boolean isPaused = false;
 	int numLinesRemoved;
 	int curX = 0; //현재 블록의 위치를 나타내는 변수
 	int curY = 0; //현재 블록의 위치를 나타내는 변수
-	JLabel statusbar; //게임 상태를 표시하는 레이블
-	JLabel levelbar;
+	final JLabel statusbar; //게임 상태를 표시하는 레이블
+	final JLabel levelbar;
 	Shape curPiece; //현재 Tetris블록을 나타내는 객체
 	Tetrominoes[] shapeBoard;
 
-	String baseDir = System.getProperty("user.dir");
-	String commonPath = Paths.get(baseDir, "src", "kr", "ac", "jbnu", "se", "tetris", "files").toString();
+	final String baseDir = System.getProperty("user.dir");
+	final String commonPath = Paths.get(baseDir, "src", "kr", "ac", "jbnu", "se", "tetris", "files").toString();
 
-	String savestatusbarpath = Paths.get(commonPath, "savestatusbar.txt").toString();
-	String scoreRecord = Paths.get(commonPath, "score.txt").toString();
-	String timeModeScoreRecord = Paths.get(commonPath, "scoretimemode.txt").toString();
-	String savepath = Paths.get(commonPath, "load1.ser").toString();
-	String breakmusicpath = Paths.get(commonPath, "break.wav").toString();
-	String gamebackgroundImagepath = Paths.get(commonPath, "backgroundimg.png").toString();
-	String sidePanelBackgroundImagePath = Paths.get(commonPath, "sidepanelimg.png").toString();
+	final String savestatusbarpath = Paths.get(commonPath, "savestatusbar.txt").toString();
+	final String scoreRecord = Paths.get(commonPath, "score.txt").toString();
+	final String timeModeScoreRecord = Paths.get(commonPath, "scoretimemode.txt").toString();
+	final String savepath = Paths.get(commonPath, "load1.ser").toString();
+	final String breakmusicpath = Paths.get(commonPath, "break.wav").toString();
+	final String gamebackgroundImagepath = Paths.get(commonPath, "backgroundimg.png").toString();
+	final String sidePanelBackgroundImagePath = Paths.get(commonPath, "sidepanelimg.png").toString();
 
 
 	int level;
-	private transient Image backgroundImage;
-	Shape nextPiece; //다음 블럭을 나타냄
+	private final transient Image backgroundImage;
 
 	private int rotateCount = 0;
-	JLabel sideLabel1;
-	JLabel sideLabel2;
-	JLabel sideLabel3;
+	final JLabel sideLabel1;
+	final JLabel sideLabel2;
+	final JLabel sideLabel3;
 	int nextX=10;
 	int nextY=10;
 
 	Timer timeLimitTimer;
 
-	private Tetris tetris;
-	public Board(Tetris parent) { //Tetris에게 상속받음
+	private final Tetris tetris;
+	public Board(Tetris parent) {
 
 		tetris=parent;
-		setFocusable(true); //키보드 이벤트 처리 가능
-		curPiece = new Shape(); //현재 테트리스 블록을 나타내는 curPiece변수에 할당
+		setFocusable(true);
+		curPiece = new Shape();
 
 		//타임어택 모드
 		timemode=parent.getTimeMode();
 
 
-		timer = new Timer(400, this); //테트리스가 떨어지는 시간
+		timer = new Timer(400, this);
 		timer.start(); //타이머 시작
 
 
@@ -179,11 +179,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 
 	public void actionPerformed(ActionEvent e) {
-		if (isFallingFinished) { //떨어지는게 끝났으면
-			isFallingFinished = false; //false로 바꾸고
-			newPiece(); //메서드 호출
+		if (isFallingFinished) {
+			isFallingFinished = false;
+			newPiece();
 		} else {
-			oneLineDown(); //그렇지 않으면 한줄씩 내림
+			oneLineDown();
 		}
 	}
 
@@ -199,27 +199,27 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		return shapeBoard[(y * BOARD_WIDTH) + x];
 	}
 
-	public void start() { //게임을 초기화하고 새로운 게임을 시작
+	public void start() {
 
-		if (isPaused) //게임이 일시정지상태면 작업수행 x
+		if (isPaused)
 			return;
 
 		isStarted = true;
 		isFallingFinished = false;
 		numLinesRemoved = 0;
-		clearBoard(); //게임 보드 초기화
+		clearBoard();
 
 		newPiece();
 		timer.start();
 	}
-	public void restart() { //게임을 초기화하고 새로운 게임을 시작
+	public void restart() {
 
 		isPaused=true;
 
 		isStarted = true;
 		isFallingFinished = false;
 		numLinesRemoved = 0;
-		clearBoard(); //게임 보드 초기화
+		clearBoard();
 
 		newPiece();
 		timer.start();
@@ -227,11 +227,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 
 	private void pause() {
-		if (!isStarted)  //게임이 시작되지 않으면 일시정지 불가능
+		if (!isStarted)
 			return;
 
-		isPaused = !isPaused; //일시중지 상태 여부
-		if (isPaused) { //퍼즈면 시간 정지
+		isPaused = !isPaused;
+		if (isPaused) {
 			timer.stop();
 			if(timemode) {
 				timeLimitTimer.stop();
@@ -257,7 +257,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			for (int j = 0; j < BOARD_WIDTH; ++j) {
 				Tetrominoes shape = shapeAt(j, BOARD_HEIGHT - i - 1);
 				if (shape != Tetrominoes.NO_SHAPE)
-					drawSquare(g, 0 + j * squareWidth(), boardTop + i * squareHeight(), shape); //있으면 그림
+					drawSquare(g, j * squareWidth(), boardTop + i * squareHeight(), shape); //있으면 그림
 			}
 		}
 
@@ -265,12 +265,21 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			for (int i = 0; i < 4; ++i) { //네개의 작은 블록들을 순회하면서
 				int x = curX + curPiece.x(i); //작은 블록들의 x좌표를 구함
 				int y = curY - curPiece.y(i); //작은 블록들의 y좌표를 구함
-				drawSquare(g, 0 + x * squareWidth(), boardTop + (BOARD_HEIGHT - y - 1) * squareHeight(),
+				drawSquare(g, x * squareWidth(), boardTop + (BOARD_HEIGHT - y - 1) * squareHeight(),
 						curPiece.getShape()); //블록의 색상과 모양을 그리는 역할
 			}
 		}
 		g.setColor(Color.BLACK);
 		g.drawLine(dividingLineX, 0, getSize().width / 2, getSize().height);
+
+		Color gridColor = new Color(102, 102, 102); // 그리드 색 지정
+		g.setColor(gridColor); // 그리드 지정
+		for(int i = 0; i <= BOARD_HEIGHT; i++) {
+			g.drawLine(0, boardTop + i * squareHeight(), BOARD_WIDTH * squareWidth(), boardTop + i * squareHeight());
+		}
+		for(int i = 0; i <= BOARD_WIDTH; i++){
+			g.drawLine(i * squareWidth(), boardTop, i * squareWidth(), boardTop + BOARD_HEIGHT * squareHeight());
+		}
 	}
 	private Timer softDropDelayTimer;
 
@@ -328,11 +337,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				timer.setDelay(300);
 				sideLabel2.setText("Delay : 300");
 			}
-		} else if (level >= 4) {
+		} else if (level == 4) {
 			levelbar.setText("LEVEL 4");
-		} else if (level >= 3) {
+		} else if (level == 3) {
 			levelbar.setText("LEVEL 3");
-		} else if (level >= 2) {
+		} else if (level == 2) {
 			levelbar.setText("LEVEL 2");
 			if (!timemode) {
 				timer.setDelay(400);
@@ -577,7 +586,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	}
 
 	public void saveGame(String filename) {
-		try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(filename))) {
+		try (ObjectOutputStream outputStream = new ObjectOutputStream(Files.newOutputStream(Paths.get(filename)))) {
 			outputStream.writeObject(this.shapeBoard); // Board 클래스 자체를 직렬화하여 저장
 			saveStatusBar(savestatusbarpath);
 		} catch (IOException e) {
@@ -585,7 +594,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		}
 	}
 	public void loadGame(String filename) {
-		try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(filename))) {
+		try (ObjectInputStream inputStream = new ObjectInputStream(Files.newInputStream(Paths.get(filename)))) {
 			loadStatusbar(savestatusbarpath);
 			this.shapeBoard = (Tetrominoes[]) inputStream.readObject(); // 직렬화된 Board 클래스를 불러옴
 			repaint();
@@ -599,11 +608,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 				timer.setDelay(300);
 				sideLabel2.setText("Delay : 300");
 			}
-		} else if (level >= 4) {
+		} else if (level == 4) {
 			levelbar.setText("LEVEL 4");
-		} else if (level >= 3) {
+		} else if (level == 3) {
 			levelbar.setText("LEVEL 3");
-		} else if (level >= 2) {
+		} else if (level == 2) {
 			levelbar.setText("LEVEL 2");
 			if(!timemode) {
 				timer.setDelay(400);

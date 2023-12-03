@@ -11,7 +11,7 @@ public class Shape implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Tetrominoes pieceShape; //변수 선언
-	private int [][]coords; //블럭의 좌표를 지정
+	private final int [][]coords; //블럭의 좌표를 지정
 
 
 	public Shape() {
@@ -58,7 +58,7 @@ public class Shape implements Serializable {
 	public Tetrominoes getShape() {
 		return pieceShape;
 	}
-	Random r = new Random();
+	final Random r = new Random();
 	public void setRandomShape() {
 		int x = Math.abs((r.nextInt()) % 7 + 1); //1에서 7사이의 무작위 정수를 나타내기 위함
 		Tetrominoes[] values = Tetrominoes.values();

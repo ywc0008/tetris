@@ -16,20 +16,20 @@ public class TetrisKeySetting extends JFrame {
     private static final String DROP_DOWN = "DropDown";
 
     protected static final Map<String, Integer> keyMappings = new HashMap<>();
-    private JButton moveLeftButton;
-    private JButton moveRightButton;
-    private JButton rotateRightButton;
-    private JButton rotateLeftButton;
-    private JButton moveDownButton;
-    private JButton dropDownButton;
-    private JButton changeButton;
-    private JButton cancelButton;
-    private int moveLeftKeyCode = KeyEvent.VK_LEFT;
-    private int moveRightKeyCode = KeyEvent.VK_RIGHT;
-    private int rotateLeftKeyCode = KeyEvent.VK_UP;
-    private int rotateRightKeyCode = KeyEvent.VK_DOWN;
-    private int moveDownKeyCode = KeyEvent.VK_D;
-    private int dropDownKeyCode = KeyEvent.VK_SPACE;
+    private final JButton moveLeftButton;
+    private final JButton moveRightButton;
+    private final JButton rotateRightButton;
+    private final JButton rotateLeftButton;
+    private final JButton moveDownButton;
+    private final JButton dropDownButton;
+    private final JButton changeButton;
+    private final JButton cancelButton;
+    private final int moveLeftKeyCode = KeyEvent.VK_LEFT;
+    private final int moveRightKeyCode = KeyEvent.VK_RIGHT;
+    private final int rotateLeftKeyCode = KeyEvent.VK_UP;
+    private final int rotateRightKeyCode = KeyEvent.VK_DOWN;
+    private final int moveDownKeyCode = KeyEvent.VK_D;
+    private final int dropDownKeyCode = KeyEvent.VK_SPACE;
 
     public TetrisKeySetting() {
         setTitle("Tetris Key Setting");
@@ -177,7 +177,6 @@ public class TetrisKeySetting extends JFrame {
         return keyMappings;
     }
 
-    //바로 확인 하고 싶을 시 메인 메소드 주석 해제
     public static void main(String[] args) {
         TetrisKeySetting keySettings = new TetrisKeySetting();
         keySettings.setVisible(true);
