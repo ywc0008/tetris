@@ -24,13 +24,13 @@ public class Tetris extends JFrame {
     private transient Audio backgroundMusic;
     private TetrisKeySetting keySetting;
     private static final String ACTION_1 = "user.dir";  // Compliant
-    String lobbywavpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\lobby.wav";
-    String scoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\score.txt";
-    String timeModeScoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\scoretimemode.txt";
-    String pianowavpath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\piano.wav";
-    String savepath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\load1.ser";
-    String mainbackground=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\audio\\\\main.png";
-    String rankbackgroundpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\audio\\rankbackground.png";
+    String lobbywavpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\lobby.wav";
+    String scoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\score.txt";
+    String timeModeScoreRecord=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\scoretimemode.txt";
+    String pianowavpath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\piano.wav";
+    String savepath=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\load1.ser";
+    String mainbackground=System.getProperty(ACTION_1)+"\\\\src\\\\kr\\\\ac\\\\jbnu\\\\se\\\\tetris\\\\files\\\\main.png";
+    String rankbackgroundpath=System.getProperty(ACTION_1)+"\\src\\kr\\ac\\jbnu\\se\\tetris\\files\\rankbackground.png";
     ImageIcon icon;
     public Tetris() {
         icon = new ImageIcon(mainbackground);
@@ -69,7 +69,7 @@ public class Tetris extends JFrame {
 
 
 // 배경 색상 설정
-        Color backgroundColor = new Color(0, 0, 8);  // 예시 색상 (파란색)
+        Color backgroundColor = new Color(0, 0, 0);  // 예시 색상 (파란색)
         startButton.setBackground(backgroundColor);
         settingButton.setBackground(backgroundColor);
         loadButton.setBackground(backgroundColor);
@@ -89,27 +89,52 @@ public class Tetris extends JFrame {
         add(lobbyPanel);
 
 
-
-
-
-
-
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showStartConfirmationDialog(); // 게임 시작 버튼을 클릭하면 게임을 시작합니다.
             }
 
             private void showStartConfirmationDialog() {
-                String[] mode={"일반모드","타임어택 모드"};
-                int result = JOptionPane.showOptionDialog(null, "게임 모드를 선택해주세요", "게 임 모 드", 0,0,null,mode,mode[1]);
-                if (result == 0) {
-                    timemode=false;
-                    startGame(); // "예"를 선택하면 게임을 시작합니다.
-                }
-                else if (result == 1) {
-                    timemode=true;
-                    startGame(); // "예"를 선택하면 게임을 시작합니다.
-                }
+                String[] mode = {"일반모드", "타임어택 모드"};
+
+                JFrame modeFrame=new JFrame("게 임 모 드");
+                // 프레임 설정
+                modeFrame.setTitle("게임 모드");
+                modeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                modeFrame.setSize(300, 150);
+                modeFrame.setLocationRelativeTo(null);
+                modeFrame.getContentPane().setBackground(Color.BLACK);
+                modeFrame.setLayout(null);
+
+                JLabel label=new JLabel("게임 모드를 선택하세요");
+                label.setBounds(80,10,160,10);
+                label.setForeground(Color.WHITE);
+                modeFrame.add(label);
+
+                // 버튼1 생성 및 설정
+                JButton button1 = new JButton(mode[0]);
+                button1.setBounds(20, 50, 110, 30);
+                button1.setBackground(Color.WHITE);
+                button1.setForeground(Color.BLACK);
+                button1.addActionListener(e -> {
+                    timemode = false;
+                    startGame();
+                });
+                modeFrame.add(button1);
+
+                // 버튼2 생성 및 설정
+                JButton button2 = new JButton(mode[1]);
+                button2.setBounds(170, 50, 110, 30);
+                button2.setBackground(Color.WHITE);
+                button2.setForeground(Color.BLACK);
+                button2.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        timemode = true;
+                        startGame();
+                    }
+                });
+                modeFrame.add(button2);
+                modeFrame.setVisible(true);
             }
         });
 

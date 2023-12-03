@@ -65,3 +65,9 @@ Q.idea/sonarlint/securityhotspotstore/8/7/871ecfeeb490d18808a9228061462b59b770a4
 Q.idea/sonarlint/securityhotspotstore/1/d/1dd92878e4c30777e3ef8ebd722eb11f8dd3470d,9\2\9243fd0e1009fd3fef01b344f35479a966a70da2
 w
 G.idea/sonarlint/issuestore/f/1/f1fef3d7dcbd3ce8bf4fa394679cb7d477da8a92,4\2\42f99c98c6e00a430717e7d40837af361ddf398f
+`
+0src/kr/ac/jbnu/se/tetris/files/savestatusbar.txt,7\f\7f68201da2fd21db8a888cace3c6e9106aca94ef
+X
+(src/kr/ac/jbnu/se/tetris/files/score.txt,d\4\d4bd87f94b5d3e9b83409bdf3529b8eb1e7f2071
+`
+0src/kr/ac/jbnu/se/tetris/files/scoretimemode.txt,8\e\8eaa53a88159e7504ad9f05731fb49a16917cc24

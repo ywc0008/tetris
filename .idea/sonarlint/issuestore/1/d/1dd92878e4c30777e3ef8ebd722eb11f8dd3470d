@@ -1,29 +1,3 @@
 
-~
-java:S1319"hThe type of "keyMappings" should be an interface such as "Map" rather than the implementation "HashMap".(¼ÇÆ
-‹
-java:S1319º"mThe return type of this method should be an interface such as "Map" rather than the implementation "HashMap".(¾Œœä8Ú‡âÚÂ1
-J
-java:S1604q"(Make this anonymous inner class a lambda(”½š•ıÿÿÿÿ8Ú‡âÚÂ1
-E
-java:S1604}"(Make this anonymous inner class a lambda(™¬ŞÔ8Ú‡âÚÂ1
-F
-java:S1604•"(Make this anonymous inner class a lambda(Èú†8Ú‡âÚÂ1
-t
-java:S1104"WMake keyMappings a static final constant or non-public and provide accessors if needed.(¼ÇÆ8Ú‡âÚÂ1
-N
-java:S1444"1Make this "public static keyMappings" field final(¼ÇÆ8Ú‡âÚÂ1
-J
-java:S3010&"(Remove this assignment of "keyMappings".(ÈÍ·ÿÿÿÿÿ8ó‡âÚÂ1
-H
-java:S2386&"&Make member "keyMappings" "protected".(ÈÍ·ÿÿÿÿÿ8ó‡âÚÂ1
-E	java:S106/"+Replace this use of System.out by a logger.(¡à³£üÿÿÿÿ
-\
-java:S1854"9Remove this useless assignment to local variable "value".(´¶ñıÿÿÿÿ8ú‡âÚÂ1
-Y	java:S125‹"<This block of commented-out lines of code should be removed.(üÔëç8ú‡âÚÂ1
-R
-java:S2864"4Iterate over the "entrySet" instead of the "keySet".(»ìÆ8ú‡âÚÂ1
-M
-java:S1481"*Remove this unused "value" local variable.(´¶ñıÿÿÿÿ8ú‡âÚÂ1
-Q
-java:S2209»"5Change this instance-reference to a static reference.(ğÎœëùÿÿÿÿ
+L	java:S106."+Replace this use of System.out by a logger.(¡à³£üÿÿÿÿ8ĞËöÂ1
+H	java:S106–"+Replace this use of System.out by a logger.( ´‡•8¤ĞËöÂ1

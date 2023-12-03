@@ -1,20 +1,12 @@
 package kr.ac.jbnu.se.tetris;
 
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
 import javax.swing.*;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.Timer;
-
-
 import javax.swing.border.EmptyBorder;
-
 import java.io.*;
 import java.nio.file.Paths;
 
@@ -42,7 +34,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 	Tetrominoes[] shapeBoard;
 
 	String baseDir = System.getProperty("user.dir");
-	String commonPath = Paths.get(baseDir, "src", "kr", "ac", "jbnu", "se", "tetris", "audio").toString();
+	String commonPath = Paths.get(baseDir, "src", "kr", "ac", "jbnu", "se", "tetris", "files").toString();
 
 	String savestatusbarpath = Paths.get(commonPath, "savestatusbar.txt").toString();
 	String scoreRecord = Paths.get(commonPath, "score.txt").toString();
@@ -360,7 +352,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		}
 		isStarted = false;
 		statusbar.setText("game over");
-		Audio endMusic = new Audio("src/kr/ac/jbnu/se/tetris/audio/end.wav");
+		Audio endMusic = new Audio("src/kr/ac/jbnu/se/tetris/files/end.wav");
 		endMusic.bgmStart();
 		saveScore();
 	}
@@ -645,7 +637,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		saveButton.setForeground(Color.WHITE);
 		quitButton.setForeground(Color.WHITE);
 		lobbyButton.setForeground(Color.WHITE);
-		Color color=new Color(20,25,80);
+		Color color=new Color(0,0,0);
 		resumeButton.setBackground(color);
 		saveButton.setBackground(color);
 		quitButton.setBackground(color);
@@ -737,4 +729,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		}
 	}
 
+
+
 }
+
