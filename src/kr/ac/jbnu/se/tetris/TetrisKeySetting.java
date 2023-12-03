@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TetrisKeySetting extends JFrame {
 
@@ -14,7 +15,7 @@ public class TetrisKeySetting extends JFrame {
     private static final String MOVE_DOWN = "MoveDown";
     private static final String DROP_DOWN = "DropDown";
 
-    public static HashMap<String, Integer> keyMappings;
+    protected static final Map<String, Integer> keyMappings = new HashMap<>();
     private JButton moveLeftButton;
     private JButton moveRightButton;
     private JButton rotateRightButton;
@@ -34,8 +35,6 @@ public class TetrisKeySetting extends JFrame {
         setTitle("Tetris Key Setting");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(300, 600);
-
-        keyMappings = new HashMap<>();
 
         keyMappings.put(MOVE_LEFT, moveLeftKeyCode);
         keyMappings.put(MOVE_RIGHT, moveRightKeyCode);
@@ -110,81 +109,72 @@ public class TetrisKeySetting extends JFrame {
         setLocationRelativeTo(null);
 
         // 변경 확인 button
-        changeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int choice = JOptionPane.showConfirmDialog(null, "키를 변경하시겠습니까?", "키 변경 확인", JOptionPane.YES_NO_OPTION);
-                if (choice == JOptionPane.YES_OPTION) {
+        changeButton.addActionListener(e ->  {
+            int choice = JOptionPane.showConfirmDialog(null, "키를 변경하시겠습니까?", "키 변경 확인", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
 
-                    dispose();
-                }
+                dispose();
             }
         });
 
+
         // 변경 취소 버튼
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int choice = JOptionPane.showConfirmDialog(null, "변경사항이 적용되지 않습니다." + "\n" + "정말로 나가시겠습니까?", "나가기 확인", JOptionPane.YES_NO_OPTION);
-                if (choice == JOptionPane.YES_OPTION) {
-                    // If the user selects "예", close the TetrisKeySetting frame
-                    dispose();
-                }
+        cancelButton.addActionListener(e ->  {
+            int choice = JOptionPane.showConfirmDialog(null, "변경사항이 적용되지 않습니다." + "\n" + "정말로 나가시겠습니까?", "나가기 확인", JOptionPane.YES_NO_OPTION);
+            if (choice == JOptionPane.YES_OPTION) {
+                // If the user selects "예", close the TetrisKeySetting frame
+                dispose();
             }
         });
     }
 
     private void setKeyButtonText(JButton button, int keyCode, String keyName) {
         String keyText = KeyEvent.getKeyText(keyCode);
-//        String mapping = keyMappings.get(keyCode);
         button.setText(" Key: " + keyText);
         keyMappings.put(keyName, keyCode);
-        for (String key : keyMappings.keySet()) {
-            String value = keyMappings.get(key).toString();
-        }
     }
 
     public void changeKeyButton(JButton button, String keyName) {
 
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
 
-                JFrame frame = new JFrame("Key Change");
-                frame.setSize(300, 200);
-                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        button.addActionListener(e -> {
 
-                frame.addKeyListener(new KeyAdapter() {
-                    @Override
-                    public void keyPressed(KeyEvent e) {
-                        int changeKeyCode = e.getKeyCode();
-                        setKeyButtonText(button, changeKeyCode, keyName);
-                        frame.dispose();
-                    }
+            JFrame frame = new JFrame("Key Change");
+            frame.setSize(300, 200);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
-                    @Override
-                    public void keyReleased(KeyEvent e) {
-                        // 키 릴리스 이벤트 처리
-                    }
+            frame.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    int changeKeyCode = e.getKeyCode();
+                    System.out.println(KeyEvent.getKeyText(changeKeyCode) + "키가 눌렸습니다. 키 코드: " + changeKeyCode);
+                    setKeyButtonText(button, changeKeyCode, keyName);
+                    frame.dispose();
+                }
 
-                    @Override
-                    public void keyTyped(KeyEvent e) {
-                        // 키 타입 이벤트를 처리
-                    }
-                });
+                @Override
+                public void keyReleased(KeyEvent e) {
+                    // 키 릴리스 이벤트 처리
+                }
+
+                @Override
+                public void keyTyped(KeyEvent e) {
+                    // 키 타입 이벤트를 처리
+                }
+            });
 
 
-                frame.setFocusable(true);
-                frame.requestFocusInWindow();
-                frame.setLocationRelativeTo(null);
-                frame.setVisible(true);
-            }
+            frame.setFocusable(true);
+            frame.requestFocusInWindow();
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+
         });
 
     }
 
-    public HashMap<String, Integer> getKeyMappings() {
-        return this.keyMappings;
+    public static Map<String, Integer> getKeyMappings() {
+        return keyMappings;
     }
 
     //바로 확인 하고 싶을 시 메인 메소드 주석 해제
