@@ -10,12 +10,6 @@ S
 :
 
 tetris.iml,4\5\45acc4efc09b9b76901a858aa625ec49a32ae427
-`
-0src/kr/ac/jbnu/se/tetris/audio/scoretimemode.txt,a\d\ad016bc8c717115c4d3f43d50da549429205cf98
-X
-(src/kr/ac/jbnu/se/tetris/audio/score.txt,f\1\f1fef3d7dcbd3ce8bf4fa394679cb7d477da8a92
-`
-0src/kr/ac/jbnu/se/tetris/audio/savestatusbar.txt,5\c\5c3d120a42197474e938266ea9c42429f1c1285e
 S
 #src/kr/ac/jbnu/se/tetris/Audio.java,7\6\7650cb8bf88588aa082a5a29d7d7bd3cb03a758a
 Y
@@ -26,31 +20,21 @@ Y
 
 .classpath,3\5\354079a72b91a4280407c16a36f47d1986fd85a5
 Å
-Q.idea/sonarlint/securityhotspotstore/f/1/f1fef3d7dcbd3ce8bf4fa394679cb7d477da8a92,6\1\61a99472af66e4bc94a72f00e8a676f9d2215e8c
-Å
 Q.idea/sonarlint/securityhotspotstore/f/8/f8b41ce76d7b80d2b47e91b5f92c15f00eccf187,2\a\2a3370f0c3348f0efdf12b03edeb48ddf466d04a
 Å
 Q.idea/sonarlint/securityhotspotstore/2/8/287723a1d19a7195e41cf23fa21864c78daff7f1,c\7\c77cd74caf92a3b831f1c3b2836cb78b07b6533e
-w
-G.idea/sonarlint/issuestore/5/c/5c3d120a42197474e938266ea9c42429f1c1285e,d\7\d7e4a324242a1f9eb38feb5a0a2a857ac1146a59
-Å
-Q.idea/sonarlint/securityhotspotstore/5/c/5c3d120a42197474e938266ea9c42429f1c1285e,b\c\bce55bda6c045eeca01b008131fb0a922c6b6021
 Å
 Q.idea/sonarlint/securityhotspotstore/f/c/fc0837765e23f195ef8580cdfea973baee12b1b5,e\6\e60a637f2cedaf2642e07f8dedfea35276ef4638
 w
 G.idea/sonarlint/issuestore/3/5/354079a72b91a4280407c16a36f47d1986fd85a5,d\f\dfac3e46bbca562b4966f9fd066d5dfc4be02a5f
 Å
 Q.idea/sonarlint/securityhotspotstore/3/5/354079a72b91a4280407c16a36f47d1986fd85a5,f\7\f7cd964224388f04fa8798a29c0b800ad4980fc6
-w
-G.idea/sonarlint/issuestore/a/d/ad016bc8c717115c4d3f43d50da549429205cf98,5\2\52fc43957f341293834fea1f8b0edfe88857e781
 S
 #.idea/sonarlint/issuestore/index.pb,9\f\9fe84ebb15faf917b7def6236dba604453cc61e0
 w
 G.idea/sonarlint/issuestore/4/5/45acc4efc09b9b76901a858aa625ec49a32ae427,0\d\0d5182c1202aa1366057217adc285a29b95f4c0b
 Å
 Q.idea/sonarlint/securityhotspotstore/7/6/7650cb8bf88588aa082a5a29d7d7bd3cb03a758a,b\7\b72874da9bfe2e8c1ede71f4dec1b2d8fa54290b
-Å
-Q.idea/sonarlint/securityhotspotstore/a/d/ad016bc8c717115c4d3f43d50da549429205cf98,7\2\728857516d5f3790502e6d5d658d75de280ea4a1
 ]
 -.idea/sonarlint/securityhotspotstore/index.pb,8\8\88a9255124c95bdc913197c120a8d560edc59c8e
 w
@@ -63,8 +47,6 @@ Q.idea/sonarlint/securityhotspotstore/e/d/ed4f0de59291413b86401adfd9916e81b38f52
 Q.idea/sonarlint/securityhotspotstore/8/7/871ecfeeb490d18808a9228061462b59b770a47d,2\e\2ee338f9640e5dc13bac74d9eaa9cdb1a3eba527
 Å
 Q.idea/sonarlint/securityhotspotstore/1/d/1dd92878e4c30777e3ef8ebd722eb11f8dd3470d,9\2\9243fd0e1009fd3fef01b344f35479a966a70da2
-w
-G.idea/sonarlint/issuestore/f/1/f1fef3d7dcbd3ce8bf4fa394679cb7d477da8a92,4\2\42f99c98c6e00a430717e7d40837af361ddf398f
 `
 0src/kr/ac/jbnu/se/tetris/files/savestatusbar.txt,7\f\7f68201da2fd21db8a888cace3c6e9106aca94ef
 X

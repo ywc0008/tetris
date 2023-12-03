@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 public class Board extends JPanel implements ActionListener,Serializable {
 
 	private static final long serialVersionUID = 1L;
-	static final int BOARD_WIDTH = 10; //게임 창 크기 가로 10
+	private static final int BOARD_WIDTH = 10; //게임 창 크기 가로 10
 	static final int BOARD_HEIGHT = 22; //세로 22
 	//타임어택모드
 	public static boolean timemode;
@@ -69,7 +69,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		timemode=parent.getTimeMode();
 
 
-		timer = new Timer(400, this);
+		timer = new Timer(450, this);
 		timer.start(); //타이머 시작
 
 
@@ -109,7 +109,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		else
 		{
 			sideLabel1.setText("Normal mode");
-			sideLabel2.setText("Delay : 400");
+			sideLabel2.setText("Delay : 450");
 			sideLabel3.setText("남은 회전횟수:∞");
 		}
 		levelbar.setSize(sideLabelSize);
@@ -158,20 +158,20 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		clearBoard(); //보드 초기화
 		if(timemode) {
 			timeLimitTimer = new Timer(1000, e -> {
-                elapsedTime++;
-                sideLabel3.setText(timeLimitInSeconds -elapsedTime + " seconds");
-                if (elapsedTime >= timeLimitInSeconds) {
-                    // 시간 제한을 초과하면 게임 종료 처리
-                    timer.stop();
-                    timeLimitTimer.stop();
-                    isStarted = false;
-                    statusbar.setText("Game over: Time limit exceeded");
-                    // 추가: 시간 초기화
-                    elapsedTime = 0;
-                    // 추가: 다시 시간을 세도록 호출
-                    saveScore();
-                }
-            });
+				elapsedTime++;
+				sideLabel3.setText(timeLimitInSeconds -elapsedTime + " seconds");
+				if (elapsedTime >= timeLimitInSeconds) {
+					// 시간 제한을 초과하면 게임 종료 처리
+					timer.stop();
+					timeLimitTimer.stop();
+					isStarted = false;
+					statusbar.setText("Game over: Time limit exceeded");
+					// 추가: 시간 초기화
+					elapsedTime = 0;
+					// 추가: 다시 시간을 세도록 호출
+					saveScore();
+				}
+			});
 			timeLimitTimer.start();
 		}
 		backgroundImage=new ImageIcon(gamebackgroundImagepath).getImage();
@@ -274,11 +274,13 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 		Color gridColor = new Color(102, 102, 102); // 그리드 색 지정
 		g.setColor(gridColor); // 그리드 지정
-		for(int i = 0; i <= BOARD_HEIGHT; i++) {
-			g.drawLine(0, boardTop + i * squareHeight(), BOARD_WIDTH * squareWidth(), boardTop + i * squareHeight());
-		}
-		for(int i = 0; i <= BOARD_WIDTH; i++){
-			g.drawLine(i * squareWidth(), boardTop, i * squareWidth(), boardTop + BOARD_HEIGHT * squareHeight());
+		if(level<4) {
+			for (int i = 0; i <= BOARD_HEIGHT; i++) {
+				g.drawLine(0, boardTop + i * squareHeight(), BOARD_WIDTH * squareWidth(), boardTop + i * squareHeight());
+			}
+			for (int i = 0; i <= BOARD_WIDTH; i++) {
+				g.drawLine(i * squareWidth(), boardTop, i * squareWidth(), boardTop + BOARD_HEIGHT * squareHeight());
+			}
 		}
 	}
 	private Timer softDropDelayTimer;
@@ -295,10 +297,10 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			softDropDelayTimer.stop();
 		}
 		softDropDelayTimer = new Timer(500, e -> {
-            // 0.5초가 지난 후 블록이 자동으로 한 칸 아래로 떨어집니다.
-            oneLineDown();
-            softDropDelayTimer.stop(); // 타이머를 멈추게 함으로써 블록이 한 번만 내려가게 합니다.
-        });
+			// 0.5초가 지난 후 블록이 자동으로 한 칸 아래로 떨어집니다.
+			oneLineDown();
+			softDropDelayTimer.stop(); // 타이머를 멈추게 함으로써 블록이 한 번만 내려가게 합니다.
+		});
 		softDropDelayTimer.start();
 
 	}
@@ -345,6 +347,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			levelbar.setText("LEVEL 2");
 			if (!timemode) {
 				timer.setDelay(400);
+				sideLabel2.setText("Delay : 400");
 			}
 		}
 	}
@@ -392,6 +395,11 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		if (!tryMove(curPiece, curX, curY)) {
 			handleGameOver();
 		}
+		// Level 3 이상인 경우 rotateCount를 초기화
+		if (level >= 3) {
+			rotateCount = 0;
+			sideLabel3.setText("남은 회전횟수: 4");
+		}
 	}
 
 
@@ -436,13 +444,13 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		frame.setVisible(true);
 
 		submitButton.addActionListener(e -> {
-            // 텍스트 필드의 내용을 String 객체에 저장
+			// 텍스트 필드의 내용을 String 객체에 저장
 
-            enteredName = nameField.getText();
-            saveScore2(enteredName);
-            frame.dispose();
-            tetris.showLobby();
-        });
+			enteredName = nameField.getText();
+			saveScore2(enteredName);
+			frame.dispose();
+			tetris.showLobby();
+		});
 
 
 
@@ -616,6 +624,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			levelbar.setText("LEVEL 2");
 			if(!timemode) {
 				timer.setDelay(400);
+				sideLabel2.setText("Delay : 400");
 			}
 		}
 
@@ -658,21 +667,23 @@ public class Board extends JPanel implements ActionListener,Serializable {
 		pausePanel.add(lobbyButton);
 
 		resumeButton.addActionListener(e -> {
-            frame.dispose(); // 팝업 창 닫기
-            pause(); // 게임 일시정지 해제
-        });
+			frame.dispose(); // 팝업 창 닫기
+			pause(); // 게임 일시정지 해제
+		});
 
 		saveButton.addActionListener(e -> {
-            saveGame(savepath);
-            System.exit(0); // 게임 종료
-        });
+			if(!timemode) {
+				saveGame(savepath);
+			}
+			System.exit(0); // 게임 종료
+		});
 
 		quitButton.addActionListener(e -> System.exit(0));
 
 		lobbyButton.addActionListener(e -> {
-            frame.dispose(); // 팝업 창 닫기
-            tetris.showLobby();
-        });
+			frame.dispose(); // 팝업 창 닫기
+			tetris.showLobby();
+		});
 
 
 
@@ -692,7 +703,7 @@ public class Board extends JPanel implements ActionListener,Serializable {
 			if (keycode == 'p' || keycode == 'P') {
 				pause();
 			} else if (keycode == 'q' || keycode == 'Q') {
-				numLinesRemoved = 10; // 테스트용
+				numLinesRemoved++; // 테스트용
 			} else {
 				handleGameActions(keycode);
 			}
@@ -741,4 +752,3 @@ public class Board extends JPanel implements ActionListener,Serializable {
 
 
 }
-

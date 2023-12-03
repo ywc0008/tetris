@@ -183,6 +183,7 @@ public class Tetris extends JFrame {
 
     final String[] record1=new String[3];
     final String[] record2=new String[3];
+
     public void loadRank() {
         try (BufferedReader reader = new BufferedReader(new FileReader(scoreRecord))) {
             for (int i = 0; i < 3; i++) {
@@ -234,6 +235,7 @@ public class Tetris extends JFrame {
         frame.add(button);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+
     }
 
 
